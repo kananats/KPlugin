@@ -7,7 +7,7 @@
     using Extension;
 
     [CustomEditor(typeof(MonoBehaviour), true)]
-    public class KPluginEditor : Editor
+    public class KEditor : Editor
     {
         private MonoBehaviour monoBehaviour;
         private MethodInfo methodInfo;
@@ -16,7 +16,7 @@
         {
             HideDefaultAttributeHandler();
 
-            monoBehaviour.GetType().GetMethods(SerializedMethodAttribute.bindingFlags).ToList().ForEach(x =>
+            monoBehaviour.GetType().GetMethods(SerializeMethodAttribute.bindingFlags).ToList().ForEach(x =>
             {
                 methodInfo = x;
                 SerializedMethodAttributeHandler();
@@ -34,12 +34,12 @@
 
         private void SerializedMethodAttributeHandler()
         {
-            methodInfo.GetCustomAttributes(typeof(SerializedMethodAttribute), true).Cast<SerializedMethodAttribute>().ToList().ForEach(x =>
+            methodInfo.GetCustomAttributes(typeof(SerializeMethodAttribute), true).Cast<SerializeMethodAttribute>().ToList().ForEach(x =>
             {
-                if (!EditorApplication.isPlaying && !x.useInEditMode || methodInfo.GetParameters().Length > 0)
+                if (!EditorApplication.isPlaying && !x.mode.HasFlag(Mode.Edit) || EditorApplication.isPlaying && !x.mode.HasFlag(Mode.Play) || methodInfo.GetParameters().Length > 0)
                     return;
 
-                string name = "(" + methodInfo.ReturnType.Name + ") " + (x.overriddenName == null ? methodInfo.Name.ToRegular() : x.overriddenName);
+                string name = "(" + methodInfo.ReturnType.Name + ") " + (x.name == null ? methodInfo.Name.ToRegular() : x.name);
                 if (!GUILayout.Button(name))
                     return;
 

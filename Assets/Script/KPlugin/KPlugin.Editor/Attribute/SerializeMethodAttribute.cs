@@ -4,28 +4,28 @@
     using System.Reflection;
 
     [AttributeUsage(AttributeTargets.Method)]
-    public class SerializedMethodAttribute : Attribute
+    public class SerializeMethodAttribute : Attribute
     {
         public static BindingFlags bindingFlags = BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
 
-        public string overriddenName
+        public string name
         {
             get;
             private set;
         }
 
-        public bool useInEditMode
+        public Mode mode
         {
             get;
             private set;
         }
 
-        public SerializedMethodAttribute(bool useInEditMode = true) : this(null, useInEditMode) { }
+        public SerializeMethodAttribute(Mode mode = Mode.All) : this(null, mode) { }
 
-        public SerializedMethodAttribute(string overriddenName, bool useInEditMode = true)
+        public SerializeMethodAttribute(string name, Mode mode = Mode.All)
         {
-            this.useInEditMode = useInEditMode;
-            this.overriddenName = overriddenName;
+            this.mode = mode;
+            this.name = name;
         }
     }
 }
