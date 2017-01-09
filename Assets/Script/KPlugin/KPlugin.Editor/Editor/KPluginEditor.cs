@@ -7,7 +7,7 @@
     using Extension;
 
     [CustomEditor(typeof(MonoBehaviour), true)]
-    public class KPlugin_Editor : Editor
+    public class KPluginEditor : Editor
     {
         private MonoBehaviour monoBehaviour;
         private MethodInfo methodInfo;
