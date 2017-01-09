@@ -17,7 +17,7 @@
                     return;
 
                 GameObject gameObject = new GameObject(x.Name.ToRegular());
-                gameObject.transform.parent = transform;
+                gameObject.SetParent(this);
                 gameObject.AddComponent(x);
             });
         }
