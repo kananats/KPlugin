@@ -5,6 +5,26 @@
 
     public static class ComponentExtension
     {
+        public static void SetParent(this Component component, Component target)
+        {
+            component.transform.SetParent(target.transform);
+        }
+
+        public static void SetParent(this Component component, GameObject target)
+        {
+            component.SetParent(target.transform);
+        }
+
+        public static void SetParent(this Component component, Component target, bool worldPositionStays)
+        {
+            component.transform.SetParent(target.transform, worldPositionStays);
+        }
+
+        public static void SetParent(this Component component, GameObject target, bool worldPositionStays)
+        {
+            component.SetParent(target.transform, worldPositionStays);
+        }
+
         public static T GetComponent<T>(this Component component) where T : Component
         {
             return component.gameObject.GetComponent<T>();

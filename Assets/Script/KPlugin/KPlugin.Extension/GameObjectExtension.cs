@@ -5,6 +5,16 @@
 
     public static class GameObjectExtension
     {
+        public static void SetParent(this GameObject gameObject, Component target)
+        {
+            gameObject.transform.SetParent(target.transform);
+        }
+
+        public static void SetParent(this GameObject gameObject, GameObject target)
+        {
+            gameObject.transform.SetParent(target.transform);
+        }
+
         public static void SetParent(this GameObject gameObject, Component target, bool worldPositionStays = false)
         {
             gameObject.transform.SetParent(target.transform, worldPositionStays);
