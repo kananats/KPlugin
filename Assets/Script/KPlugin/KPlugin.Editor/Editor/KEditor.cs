@@ -6,14 +6,21 @@
     using UnityEngine;
     using Extension;
 
-    [CustomEditor(typeof(MonoBehaviour), true)]
+    [CustomEditor(typeof(MonoBehaviour), true), CanEditMultipleObjects]
     public class KEditor : Editor
     {
+        private MonoBehaviour[] monoBehaviours;
         private MonoBehaviour monoBehaviour;
         private MethodInfo methodInfo;
 
         public override void OnInspectorGUI()
         {
+            monoBehaviours = targets.Cast<MonoBehaviour>().ToArray();
+            monoBehaviour = monoBehaviours[0];
+
+            if (monoBehaviour == null)
+                return;
+
             HideDefaultAttributeHandler();
 
             monoBehaviour.GetType().GetMethods(SerializeMethodAttribute.bindingFlags).ToList().ForEach(x =>
@@ -25,13 +32,13 @@
 
         private void HideDefaultAttributeHandler()
         {
-            monoBehaviour = target as MonoBehaviour;
-            if (monoBehaviour == null || monoBehaviour.GetType().GetCustomAttributes(typeof(HideDefaultAttribute), true).Cast<HideDefaultAttribute>().ToList().Count > 0)
+            if (monoBehaviour.GetType().GetCustomAttributes(typeof(HideDefaultAttribute), true).Cast<HideDefaultAttribute>().ToList().Count > 0)
                 return;
 
             DrawDefaultInspector();
         }
 
+        //TODO Undo Handler
         private void SerializedMethodAttributeHandler()
         {
             methodInfo.GetCustomAttributes(typeof(SerializeMethodAttribute), true).Cast<SerializeMethodAttribute>().ToList().ForEach(x =>
@@ -43,11 +50,16 @@
                 if (!GUILayout.Button(name))
                     return;
 
-                object value = methodInfo.Invoke(monoBehaviour, null);
-                if (value == null)
-                    return;
+                monoBehaviours.ToList().ForEach(y =>
+                {
+                    object value = methodInfo.Invoke(y, null);
+                    Repaint();
 
-                Debug.Log(methodInfo.Name + "() returns " + value + ".");
+                    if (value == null)
+                        return;
+
+                    Debug.Log("[" + y.name + "] " + methodInfo.Name + "() returns " + value + ".");
+                });
             });
         }
     }
