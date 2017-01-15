@@ -11,56 +11,42 @@
     {
         private MonoBehaviour[] monoBehaviours;
         private MonoBehaviour monoBehaviour;
-        private MethodInfo methodInfo;
 
         public override void OnInspectorGUI()
         {
             monoBehaviours = targets.Cast<MonoBehaviour>().ToArray();
             monoBehaviour = monoBehaviours[0];
 
-            if (monoBehaviour == null)
-                return;
-
             HideDefaultAttributeHandler();
+            monoBehaviour.GetType().GetMethods(SerializeMethodAttribute.bindingFlags).ToList().ForEach(x => SerializedMethodAttributeHandler(x));
 
-            monoBehaviour.GetType().GetMethods(SerializeMethodAttribute.bindingFlags).ToList().ForEach(x =>
-            {
-                methodInfo = x;
-                SerializedMethodAttributeHandler();
-            });
+            Repaint();
         }
 
         private void HideDefaultAttributeHandler()
         {
-            if (monoBehaviour.GetType().GetCustomAttributes(typeof(HideDefaultAttribute), true).Cast<HideDefaultAttribute>().ToList().Count > 0)
-                return;
-
-            DrawDefaultInspector();
+            if (monoBehaviour.GetType().GetCustomAttribute<HideDefaultAttribute>() == null)
+                DrawDefaultInspector();
         }
 
-        //TODO Undo Handler
-        private void SerializedMethodAttributeHandler()
+        private void SerializedMethodAttributeHandler(MethodInfo methodInfo)
         {
-            methodInfo.GetCustomAttributes(typeof(SerializeMethodAttribute), true).Cast<SerializeMethodAttribute>().ToList().ForEach(x =>
-            {
-                if (!EditorApplication.isPlaying && !x.mode.HasFlag(Mode.Edit) || EditorApplication.isPlaying && !x.mode.HasFlag(Mode.Play) || methodInfo.GetParameters().Length > 0)
-                    return;
+            SerializeMethodAttribute attribute = methodInfo.GetCustomAttribute<SerializeMethodAttribute>();
 
-                string name = "(" + methodInfo.ReturnType.Name + ") " + (x.name == null ? methodInfo.Name.ToRegular() : x.name);
-                if (!GUILayout.Button(name))
-                    return;
+            if (attribute == null)
+                return;
 
-                monoBehaviours.ToList().ForEach(y =>
-                {
-                    object value = methodInfo.Invoke(y, null);
-                    Repaint();
+            bool disableEditMode = !EditorApplication.isPlaying && !attribute.mode.HasFlag(Mode.Edit);
+            bool disablePlayMode = EditorApplication.isPlaying && !attribute.mode.HasFlag(Mode.Play);
 
-                    if (value == null)
-                        return;
+            if (disableEditMode || disablePlayMode)
+                return;
 
-                    Debug.Log("[" + y.name + "] " + methodInfo.Name + "() returns " + value + ".");
-                });
-            });
+            string name = "(" + methodInfo.ReturnType.Name + ") " + (attribute.name == null ? methodInfo.Name.ToRegular() : attribute.name);
+            if (!GUILayout.Button(name))
+                return;
+
+            methodInfo.AutoInvoke(monoBehaviours, null);
         }
     }
 }
