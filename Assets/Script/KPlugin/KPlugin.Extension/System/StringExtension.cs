@@ -6,8 +6,6 @@
 
     public static class StringExtension
     {
-        public static readonly Regex alphanumeric = new Regex("^[a-zA-Z0-9]*$");
-
         public static string ToCapital(this string s)
         {
             if (s == null)
