@@ -10,6 +10,7 @@
     {
         public static BindingFlags bindingFlags = BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
 
+        public static string unexpectedTokenError = "unexpected token";
         public static string commandNotFoundError = "'{0}' is not recognized as a command";
         public static string argumentMismatchError = "argument mismatch for invoking '{0}'";
         public static string runtimeError = "unexpected error while running '{0}'";
@@ -22,7 +23,7 @@
 
         public ConsoleMethodAttribute(string name)
         {
-            this.name = name.IsMatch(RegexConstant.alphanumeric) ? name : null;
+            this.name = name.IsMatch(RegexConstant.alphabet) ? name : null;
         }
     }
 }
