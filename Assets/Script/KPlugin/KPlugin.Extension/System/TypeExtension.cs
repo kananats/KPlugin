@@ -8,7 +8,7 @@
     {
         public static bool IsGenericSubclass(this Type type, Type genericType)
         {
-            return type.GetTypeHierarchy(false).Where(t => t.IsGenericType).Select(t => t.GetGenericTypeDefinition()).Any(t => genericType.Equals(t));
+            return type.GetTypeHierarchy(false).Where(x => x.IsGenericType).Select(x => x.GetGenericTypeDefinition()).Any(x => genericType.Equals(x));
         }
 
         public static IEnumerable<Type> GetTypeHierarchy(this Type type, bool includingSelf = true)
