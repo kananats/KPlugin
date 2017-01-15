@@ -3,18 +3,14 @@
     using System.Linq;
     using System.Reflection;
     using UnityEngine;
-    using UnityEditor;
     using Editor;
     using Extension;
 
     [ExecuteInEditMode]
     public class SingletonManager : SingletonMonoBehaviour<SingletonManager>
     {
-        void Start()
+        void Reset()
         {
-            if (EditorApplication.isPlaying)
-                return;
-
             Refresh();
         }
 

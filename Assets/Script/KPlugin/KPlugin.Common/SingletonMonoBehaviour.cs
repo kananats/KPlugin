@@ -2,9 +2,8 @@
 {
     using UnityEngine;
 
-    public class SingletonMonoBehaviour<T> : MonoBehaviour where T : MonoBehaviour
+    public class SingletonMonoBehaviour<T> : MonoBehaviour where T : SingletonMonoBehaviour<T>
     {
-        private static bool applicationIsQuitting = false;
         private static object _lock = new object();
 
         private static T _instance;
@@ -13,12 +12,6 @@
         {
             get
             {
-                if (applicationIsQuitting)
-                {
-                    Debug.LogWarning("[Singleton] Instance '" + typeof(T) + "' already destroyed on application quit." + " Won't create again - returning null.");
-                    return null;
-                }
-
                 lock (_lock)
                 {
                     if (_instance == null)
@@ -41,21 +34,11 @@
 
                             Debug.Log("[Singleton] An instance of " + typeof(T) + " is needed in the scene, so '" + singleton + "' was created with DontDestroyOnLoad.");
                         }
-                        else
-                        {
-                            Debug.Log("[Singleton] Using instance already created: " + _instance.gameObject.name);
-                        }
                     }
 
                     return _instance;
                 }
             }
-        }
-
-
-        public void OnDestroy()
-        {
-            applicationIsQuitting = true;
         }
     }
 }
