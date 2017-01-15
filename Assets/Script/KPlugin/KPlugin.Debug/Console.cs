@@ -22,9 +22,9 @@
 
             Assembly.GetExecutingAssembly().GetTypes().Where(x => x.IsAbstract && x.IsSealed || !x.IsAbstract && !x.IsInterface && !x.IsGenericType && typeof(MonoBehaviour).IsAssignableFrom(x)).ToList().ForEach(x =>
              {
-                 x.GetMethods(ConsoleCommandAttribute.bindingFlags).Where(y => !y.IsAbstract && !y.IsGenericMethod && !y.IsDefined<ExtensionAttribute>()).ToList().ForEach(y =>
+                 x.GetMethods(ConsoleMethodAttribute.bindingFlags).Where(y => !y.IsAbstract && !y.IsGenericMethod && !y.IsDefined<ExtensionAttribute>()).ToList().ForEach(y =>
                  {
-                     ConsoleCommandAttribute attribute = y.GetCustomAttribute<ConsoleCommandAttribute>();
+                     ConsoleMethodAttribute attribute = y.GetCustomAttribute<ConsoleMethodAttribute>();
                      if (attribute == null || attribute.name == null)
                          return;
 
@@ -54,7 +54,7 @@
 
                 if (!dictionary.ContainsKey(name))
                 {
-                    Debug.Log(string.Format(ConsoleCommandAttribute.commandNotFoundError, name));
+                    Debug.Log(string.Format(ConsoleMethodAttribute.commandNotFoundError, name));
                     return;
                 }
 
@@ -112,7 +112,7 @@
 
                 if (mostCompatibleMethod == null)
                 {
-                    Debug.Log(string.Format(ConsoleCommandAttribute.argumentMismatchError, name));
+                    Debug.Log(string.Format(ConsoleMethodAttribute.argumentMismatchError, name));
                     return;
                 }
 
@@ -122,7 +122,7 @@
                 }
                 catch (Exception)
                 {
-                    Debug.Log(string.Format(ConsoleCommandAttribute.runtimeError, name));
+                    Debug.Log(string.Format(ConsoleMethodAttribute.runtimeError, name));
                     return;
                 }
                 finally

@@ -6,7 +6,7 @@
     using Constant;
 
     [AttributeUsage(AttributeTargets.Method)]
-    public class ConsoleCommandAttribute : Attribute
+    public class ConsoleMethodAttribute : Attribute
     {
         public static BindingFlags bindingFlags = BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
 
@@ -20,7 +20,7 @@
             private set;
         }
 
-        public ConsoleCommandAttribute(string name)
+        public ConsoleMethodAttribute(string name)
         {
             this.name = name.IsMatch(RegexConstant.alphanumeric) ? name : null;
         }
