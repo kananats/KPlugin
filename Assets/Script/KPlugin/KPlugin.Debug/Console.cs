@@ -14,11 +14,11 @@
         [SerializeField]
         private InputField inputField;
 
-        private Dictionary<string, Dictionary<int, MethodInfo>> dictionary;
+        private Dictionary<string, List<MethodInfo>> dictionary;
 
         void Awake()
         {
-            dictionary = new Dictionary<string, Dictionary<int, MethodInfo>>();
+            dictionary = new Dictionary<string, List<MethodInfo>>();
 
             Assembly.GetExecutingAssembly().GetTypes().Where(x => x.IsAbstract && x.IsSealed || !x.IsAbstract && !x.IsInterface && !x.IsGenericType && typeof(MonoBehaviour).IsAssignableFrom(x)).ToList().ForEach(x =>
              {
@@ -37,14 +37,10 @@
                          return;
 
                      if (!dictionary.ContainsKey(attribute.name))
-                         dictionary[attribute.name] = new Dictionary<int, MethodInfo>();
+                         dictionary[attribute.name] = new List<MethodInfo>();
 
-                     Dictionary<int, MethodInfo> subDictionary = dictionary[attribute.name];
-
-                     if (subDictionary.ContainsKey(parameterInfos.Length))
-                         return;
-
-                     subDictionary[parameterInfos.Length] = y;
+                     List<MethodInfo> list = dictionary[attribute.name];
+                     list.Add(y);
                  });
              });
 
@@ -62,42 +58,72 @@
                     return;
                 }
 
-                Dictionary<int, MethodInfo> subDictionary = dictionary[name];
+                List<MethodInfo> list = dictionary[name];
 
-                string[] parameters = tokens.Skip(1).ToArray();
-                int numberOfParameters = parameters.Length;
-
-                if (!subDictionary.ContainsKey(numberOfParameters))
-                {
-                    Debug.Log(string.Format(ConsoleCommandAttribute.argumentMismatchError, name, numberOfParameters));
-                    return;
-                }
-
-                object[] boxedParameters = parameters.ToList().Select(y =>
+                object[] parameters = tokens.Skip(1).Select(y =>
                 {
                     bool boolOutput;
                     int intOutput;
                     float floatOutput;
 
-                    if (bool.TryParse(y, out boolOutput))
-                        return Convert.ChangeType(boolOutput, typeof(object));
-
-                    else if (int.TryParse(y, out intOutput))
-                        return Convert.ChangeType(intOutput, typeof(object));
-
-                    else if (float.TryParse(y, out floatOutput))
-                        return Convert.ChangeType(floatOutput, typeof(object));
-
-                    return Convert.ChangeType(y, typeof(object));
+                    return bool.TryParse(y, out boolOutput) ? boolOutput : (int.TryParse(y, out intOutput) ? intOutput : (float.TryParse(y, out floatOutput) ? floatOutput : (object)y));
                 }).ToArray();
+
+                MethodInfo mostCompatibleMethod = null;
+                object[] mostCompatibleConvertedParameters = null;
+                int minCompatibility = int.MaxValue;
+
+                foreach (MethodInfo methodInfo in list)
+                {
+                    ParameterInfo[] targetParameters = methodInfo.GetParameters();
+                    if (parameters.Length != targetParameters.Length)
+                        continue;
+
+                    int compatibility = 0;
+                    object[] convertedParameters = new object[parameters.Length];
+
+                    for (int i = 0; i < parameters.Length; i++)
+                    {
+                        int parameterCompatibility;
+                        convertedParameters[i] = parameters[i].ChangeTypeWithCompatibility(targetParameters[i].ParameterType, out parameterCompatibility);
+
+                        if (parameterCompatibility < 0)
+                        {
+                            compatibility = -1;
+                            break;
+                        }
+
+                        compatibility += parameterCompatibility;
+                    }
+
+                    if (compatibility < 0)
+                        continue;
+
+                    if (compatibility < minCompatibility)
+                    {
+                        mostCompatibleMethod = methodInfo;
+                        mostCompatibleConvertedParameters = convertedParameters;
+                        minCompatibility = compatibility;
+                    }
+
+                    if (compatibility == 0)
+                        break;
+                }
+
+                if (mostCompatibleMethod == null)
+                {
+                    Debug.Log(string.Format(ConsoleCommandAttribute.argumentMismatchError, name));
+                    return;
+                }
 
                 try
                 {
-                    subDictionary[numberOfParameters].AutoInvoke(boxedParameters);
+                    mostCompatibleMethod.AutoInvoke(mostCompatibleConvertedParameters);
                 }
                 catch (Exception)
                 {
                     Debug.Log(string.Format(ConsoleCommandAttribute.runtimeError, name));
+                    return;
                 }
                 finally
                 {
