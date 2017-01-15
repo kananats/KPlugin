@@ -53,11 +53,11 @@
                 string name;
                 object[] arguments;
                 List<int> targetIdList;
-                List<string> targetIdName;
+                List<string> targetNameList;
 
                 try
                 {
-                    Parse(x, out name, out arguments, out targetIdList, out targetIdName);
+                    Parse(x, out name, out arguments, out targetIdList, out targetNameList);
                 }
                 catch (Exception)
                 {
@@ -128,7 +128,7 @@
 
                 try
                 {
-                    mostCompatibleMethod.AutoInvoke(y => targetIdList.Any(z => z == y.GetInstanceID()) || targetIdName.Any(z => z == y.name), mostCompatibleConvertedArguments);
+                    mostCompatibleMethod.AutoInvoke(y => targetIdList == null && targetNameList == null || targetIdList != null && targetIdList.Any(z => z == y.GetInstanceID()) || targetNameList != null && targetNameList.Any(z => z == y.name), mostCompatibleConvertedArguments);
                 }
                 catch (Exception)
                 {
@@ -154,17 +154,17 @@
 
             Parse(s, out name, out arguments, out optionDictionary);
 
-            targetIdList = optionDictionary.ContainsKey("id") ? optionDictionary["id"].Select(x => (int)x).ToList() : new List<int>();
-            targetIdName = optionDictionary.ContainsKey("name") ? optionDictionary["name"].Select(x => (string)x).ToList() : new List<string>();
+            targetIdList = optionDictionary.ContainsKey("id") ? optionDictionary["id"].Select(x => (int)x).ToList() : null;
+            targetIdName = optionDictionary.ContainsKey("name") ? optionDictionary["name"].Select(x => (string)x).ToList() : null;
         }
 
         private static void Parse(string s, out string name, out object[] arguments, out Dictionary<string, List<object>> optionDictionary)
         {
             string nameTemp = null;
-            List<object> argumentListTemp = null;
+            List<object> argumentListTemp = argumentListTemp = new List<object>();
             Dictionary<string, List<object>> optionDictionaryTemp = new Dictionary<string, List<object>>();
 
-            string lastOption = null;
+            string option = null;
 
             s.SplitByWhiteSpace().ToList().ForEach(x =>
             {
@@ -179,37 +179,21 @@
 
                 if (x[0] == '-' && x.Substring(1).IsMatch(RegexConstant.alphabet))
                 {
-                    lastOption = x.Substring(1);
-
-                    if (lastOption == "args")
-                    {
-                        if (argumentListTemp != null)
-                            throw new NotSupportedException();
-
-                        argumentListTemp = new List<object>();
-                        return;
-                    }
-
-                    if (optionDictionaryTemp.ContainsKey(lastOption))
+                    option = x.Substring(1);
+                    if (optionDictionaryTemp.ContainsKey(option))
                         throw new NotSupportedException();
 
-                    optionDictionaryTemp[lastOption] = new List<object>();
+                    optionDictionaryTemp[option] = new List<object>();
                     return;
                 }
 
-                if (lastOption == null)
-                {
-                    lastOption = "args";
-                    argumentListTemp = new List<object>();
-                }
-
-                if (lastOption == "args")
+                if (option == null)
                 {
                     argumentListTemp.Add(Box(x));
                     return;
                 }
 
-                optionDictionaryTemp[lastOption].Add(Box(x));
+                optionDictionaryTemp[option].Add(Box(x));
             });
 
             name = nameTemp;
