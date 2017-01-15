@@ -10,7 +10,7 @@
 
             if (targetType != typeof(bool) && targetType != typeof(int) && targetType != typeof(float) && targetType != typeof(string)
                 || type != typeof(bool) && type != typeof(int) && type != typeof(float) && type != typeof(string))
-                throw new NotImplementedException();
+                throw new NotSupportedException();
 
             compatibility = -1;
 
