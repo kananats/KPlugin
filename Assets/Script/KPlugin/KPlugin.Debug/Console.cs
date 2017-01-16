@@ -15,20 +15,46 @@
         [SerializeField]
         private InputField inputField;
 
-        private Dictionary<string, List<MethodInfo>> dictionary;
+        private static readonly string unexpectedTokenError = "'{0}' is not a valid input string";
+
+        private Dictionary<string, List<FieldInfo>> fieldInfoDictionary;
+        private Dictionary<string, List<PropertyInfo>> propertyInfoDictionary;
+        private Dictionary<string, List<MethodInfo>> methodInfoDictionary;
+
+        private List<Type> typeList;
+
+        private string input;
+
+        private string command;
+        private object[] arguments;
+        private List<int> targetIdList;
+        private List<string> targetNameList;
 
         void Awake()
         {
             InitializeDictionary();
 
-            inputField.onEndEdit.AddListener(InputFieldHandler);
+            inputField.onEndEdit.AddListener(Handler);
         }
 
         private void InitializeDictionary()
         {
-            dictionary = new Dictionary<string, List<MethodInfo>>();
+            typeList = Assembly.GetExecutingAssembly().GetTypes().Where(x => x.IsAbstract && x.IsSealed || !x.IsAbstract && !x.IsInterface && !x.IsGenericType && typeof(MonoBehaviour).IsAssignableFrom(x)).ToList();
 
-            Assembly.GetExecutingAssembly().GetTypes().Where(x => x.IsAbstract && x.IsSealed || !x.IsAbstract && !x.IsInterface && !x.IsGenericType && typeof(MonoBehaviour).IsAssignableFrom(x)).ToList().ForEach(x =>
+            InitializeFieldInfoDictionary();
+            InitializeMethodInfoDictionary();
+        }
+
+        private void InitializeFieldInfoDictionary()
+        {
+
+        }
+
+        private void InitializeMethodInfoDictionary()
+        {
+            methodInfoDictionary = new Dictionary<string, List<MethodInfo>>();
+
+            typeList.ForEach(x =>
             {
                 x.GetMethods(ConsoleMethodAttribute.bindingFlags).Where(y => !y.IsAbstract && !y.IsGenericMethod && !y.IsDefined<ExtensionAttribute>()).ToList().ForEach(y =>
                 {
@@ -36,16 +62,16 @@
                     if (attribute == null)
                         return;
 
-                    string name = attribute.name;
-                    if (name == null || !name.IsMatch(RegexConstant.alphabetOrUnderscore))
+                    string command = attribute.command;
+                    if (command == null || !command.IsMatch(RegexConstant.alphabetOrUnderscore))
                     {
-                        Debug.LogError(ConsoleMethodAttribute.unsupportedCommandNameError.ReplacedBy(name));
+                        Debug.LogError(ConsoleMethodAttribute.unsupportedMethodNameError.ReplacedBy(command));
                         return;
                     }
 
-                    if (name == "get" || name == "set")
+                    if (command == "get" || command == "set")
                     {
-                        Debug.LogError(ConsoleMethodAttribute.reservedKeywordError.ReplacedBy(name));
+                        Debug.LogError(ConsoleMethodAttribute.reservedKeywordError.ReplacedBy(command));
                         return;
                     }
 
@@ -56,14 +82,14 @@
                         return z.IsOut || type.IsByRef || !type.IsPrimitive && type != typeof(string);
                     }))
                     {
-                        Debug.LogError(ConsoleMethodAttribute.unsupportedArgumentError.ReplacedBy(name));
+                        Debug.LogError(ConsoleMethodAttribute.unsupportedArgumentError.ReplacedBy(command));
                         return;
                     }
 
-                    if (!dictionary.ContainsKey(attribute.name))
-                        dictionary[attribute.name] = new List<MethodInfo>();
+                    if (!methodInfoDictionary.ContainsKey(attribute.command))
+                        methodInfoDictionary[attribute.command] = new List<MethodInfo>();
 
-                    List<MethodInfo> list = dictionary[attribute.name];
+                    List<MethodInfo> list = methodInfoDictionary[attribute.command];
 
                     if (list.Any(z =>
                     {
@@ -78,7 +104,7 @@
                         return true;
                     }))
                     {
-                        Debug.LogError(ConsoleMethodAttribute.duplicatedCommandError.ReplacedBy(name));
+                        Debug.LogError(ConsoleMethodAttribute.duplicatedMethodError.ReplacedBy(command));
                         return;
                     }
 
@@ -87,55 +113,62 @@
             });
         }
 
-        private void InputFieldHandler(string s)
+        private void Handler(string input)
         {
             if (!Input.GetKeyDown(KeyCode.Return) && !Input.GetKeyDown(KeyCode.KeypadEnter))
                 return;
 
-            string name;
-            object[] arguments;
-            List<int> targetIdList;
-            List<string> targetNameList;
-
+            this.input = input;
+            
             try
             {
-                Parse(s, out name, out arguments, out targetIdList, out targetNameList);
+                Parse();
             }
             catch (Exception)
             {
-                Debug.Log(ConsoleMethodAttribute.unexpectedTokenError);
+                Debug.Log(unexpectedTokenError);
                 ClearInputField();
 
                 return;
             }
-
-            if (!dictionary.ContainsKey(name))
+            
+            if (command == "get")
             {
-                Debug.Log(ConsoleMethodAttribute.commandNotFoundError.ReplacedBy(name));
+                return;
+            }
+
+            if (command == "set")
+            {
+                return;
+            }
+
+            if (!methodInfoDictionary.ContainsKey(command))
+            {
+                Debug.Log(ConsoleMethodAttribute.methodNotFoundError.ReplacedBy(command));
                 ClearInputField();
 
                 return;
             }
-
-            List<MethodInfo> list = dictionary[name];
+            
+            List<MethodInfo> methodInfoList = methodInfoDictionary[command];
 
             MethodInfo mostCompatibleMethod = null;
-            object[] mostCompatibleConvertedArguments = null;
+            object[] mostCompatibleBoxedArguments = null;
             int minCompatibility = int.MaxValue;
 
-            foreach (MethodInfo methodInfo in list)
+            foreach (MethodInfo methodInfo in methodInfoList)
             {
                 ParameterInfo[] targetArguments = methodInfo.GetParameters();
                 if (arguments.Length != targetArguments.Length)
                     continue;
 
                 int compatibility = 0;
-                object[] convertedArguments = new object[arguments.Length];
+                object[] boxedArguments = new object[arguments.Length];
 
                 for (int i = 0; i < arguments.Length; i++)
                 {
                     int argumentCompatibility;
-                    convertedArguments[i] = arguments[i].ChangeTypeWithCompatibility(targetArguments[i].ParameterType, out argumentCompatibility);
+                    boxedArguments[i] = arguments[i].ChangeTypeWithCompatibility(targetArguments[i].ParameterType, out argumentCompatibility);
 
                     if (argumentCompatibility < 0)
                     {
@@ -152,7 +185,7 @@
                 if (compatibility < minCompatibility)
                 {
                     mostCompatibleMethod = methodInfo;
-                    mostCompatibleConvertedArguments = convertedArguments;
+                    mostCompatibleBoxedArguments = boxedArguments;
                     minCompatibility = compatibility;
                 }
 
@@ -162,7 +195,7 @@
 
             if (mostCompatibleMethod == null)
             {
-                Debug.Log(ConsoleMethodAttribute.mismatchArgumentError.ReplacedBy(name));
+                Debug.Log(ConsoleMethodAttribute.argumentTypeMismatchError.ReplacedBy(command));
                 ClearInputField();
 
                 return;
@@ -170,11 +203,11 @@
 
             try
             {
-                mostCompatibleMethod.AutoInvoke(y => targetIdList == null && targetNameList == null || targetIdList != null && targetIdList.Any(z => z == y.GetInstanceID()) || targetNameList != null && targetNameList.Any(z => z == y.name), mostCompatibleConvertedArguments);
+                mostCompatibleMethod.AutoInvoke(y => targetIdList == null && targetNameList == null || targetIdList != null && targetIdList.Any(z => z == y.GetInstanceID()) || targetNameList != null && targetNameList.Any(z => z == y.name), mostCompatibleBoxedArguments);
             }
             catch (Exception)
             {
-                Debug.Log(ConsoleMethodAttribute.runtimeError.ReplacedBy(name));
+                Debug.Log(ConsoleMethodAttribute.runtimeError.ReplacedBy(command));
                 return;
             }
             finally
@@ -189,57 +222,47 @@
             inputField.text = "";
         }
 
-        private static void Parse(string s, out string name, out object[] arguments, out List<int> targetIdList, out List<string> targetIdName)
+        private void Parse()
         {
-            Dictionary<string, List<object>> optionDictionary;
-
-            Parse(s, out name, out arguments, out optionDictionary);
-
-            targetIdList = optionDictionary.ContainsKey("id") ? optionDictionary["id"].Select(x => (int)x).ToList() : null;
-            targetIdName = optionDictionary.ContainsKey("name") ? optionDictionary["name"].Select(x => (string)x).ToList() : null;
-        }
-
-        private static void Parse(string s, out string name, out object[] arguments, out Dictionary<string, List<object>> optionDictionary)
-        {
-            string nameTemp = null;
-            List<object> argumentListTemp = argumentListTemp = new List<object>();
-            Dictionary<string, List<object>> optionDictionaryTemp = new Dictionary<string, List<object>>();
+            List<object> argumentList = new List<object>();
+            Dictionary<string, List<object>> optionDictionary = new Dictionary<string, List<object>>();
 
             string option = null;
 
-            s.SplitByWhiteSpace().ToList().ForEach(x =>
+            input.SplitByWhiteSpace().ToList().ForEach(x =>
             {
-                if (nameTemp == null)
+                if (command == null)
                 {
                     if (!x.IsMatch(RegexConstant.alphabet))
                         throw new NotSupportedException();
 
-                    nameTemp = x;
+                    command = x;
                     return;
                 }
 
                 if (x[0] == '-' && x.Substring(1).IsMatch(RegexConstant.alphabet))
                 {
                     option = x.Substring(1);
-                    if (optionDictionaryTemp.ContainsKey(option))
+                    if (optionDictionary.ContainsKey(option))
                         throw new NotSupportedException();
 
-                    optionDictionaryTemp[option] = new List<object>();
+                    optionDictionary[option] = new List<object>();
                     return;
                 }
 
                 if (option == null)
                 {
-                    argumentListTemp.Add(Box(x));
+                    argumentList.Add(Box(x));
                     return;
                 }
 
-                optionDictionaryTemp[option].Add(Box(x));
+                optionDictionary[option].Add(Box(x));
             });
 
-            name = nameTemp;
-            arguments = argumentListTemp.ToArray();
-            optionDictionary = optionDictionaryTemp;
+            arguments = argumentList.ToArray();
+
+            targetIdList = optionDictionary.ContainsKey("id") ? optionDictionary["id"].Select(x => (int)x).ToList() : null;
+            targetNameList = optionDictionary.ContainsKey("name") ? optionDictionary["name"].Select(x => (string)x).ToList() : null;
         }
 
         private static object Box(string s)
