@@ -119,6 +119,11 @@
                 return;
 
             this.input = input;
+
+            command = null;
+            arguments = null;
+            targetIdList = null;
+            targetNameList = null;
             
             try
             {
