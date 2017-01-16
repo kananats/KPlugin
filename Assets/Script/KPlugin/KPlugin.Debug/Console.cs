@@ -19,6 +19,13 @@
 
         void Awake()
         {
+            InitializeDictionary();
+
+            inputField.onEndEdit.AddListener(InputFieldHandler);
+        }
+
+        private void InitializeDictionary()
+        {
             dictionary = new Dictionary<string, List<MethodInfo>>();
 
             Assembly.GetExecutingAssembly().GetTypes().Where(x => x.IsAbstract && x.IsSealed || !x.IsAbstract && !x.IsInterface && !x.IsGenericType && typeof(MonoBehaviour).IsAssignableFrom(x)).ToList().ForEach(x =>
@@ -44,102 +51,102 @@
                     list.Add(y);
                 });
             });
+        }
 
-            inputField.onEndEdit.AddListener(x =>
+        private void InputFieldHandler(string s)
+        {
+            if (!Input.GetKeyDown(KeyCode.Return) && !Input.GetKeyDown(KeyCode.KeypadEnter))
+                return;
+
+            string name;
+            object[] arguments;
+            List<int> targetIdList;
+            List<string> targetNameList;
+
+            try
             {
-                if (!Input.GetKeyDown(KeyCode.Return) && !Input.GetKeyDown(KeyCode.KeypadEnter))
-                    return;
+                Parse(s, out name, out arguments, out targetIdList, out targetNameList);
+            }
+            catch (Exception)
+            {
+                Debug.Log(ConsoleMethodAttribute.unexpectedTokenError);
+                ClearInputField();
 
-                string name;
-                object[] arguments;
-                List<int> targetIdList;
-                List<string> targetNameList;
+                return;
+            }
 
-                try
+            if (!dictionary.ContainsKey(name))
+            {
+                Debug.Log(string.Format(ConsoleMethodAttribute.commandNotFoundError, name));
+                ClearInputField();
+
+                return;
+            }
+
+            List<MethodInfo> list = dictionary[name];
+
+            MethodInfo mostCompatibleMethod = null;
+            object[] mostCompatibleConvertedArguments = null;
+            int minCompatibility = int.MaxValue;
+
+            foreach (MethodInfo methodInfo in list)
+            {
+                ParameterInfo[] targetArguments = methodInfo.GetParameters();
+                if (arguments.Length != targetArguments.Length)
+                    continue;
+
+                int compatibility = 0;
+                object[] convertedArguments = new object[arguments.Length];
+
+                for (int i = 0; i < arguments.Length; i++)
                 {
-                    Parse(x, out name, out arguments, out targetIdList, out targetNameList);
-                }
-                catch (Exception)
-                {
-                    Debug.Log(ConsoleMethodAttribute.unexpectedTokenError);
-                    ClearInputField();
+                    int argumentCompatibility;
+                    convertedArguments[i] = arguments[i].ChangeTypeWithCompatibility(targetArguments[i].ParameterType, out argumentCompatibility);
 
-                    return;
-                }
-
-                if (!dictionary.ContainsKey(name))
-                {
-                    Debug.Log(string.Format(ConsoleMethodAttribute.commandNotFoundError, name));
-                    ClearInputField();
-
-                    return;
-                }
-
-                List<MethodInfo> list = dictionary[name];
-
-                MethodInfo mostCompatibleMethod = null;
-                object[] mostCompatibleConvertedArguments = null;
-                int minCompatibility = int.MaxValue;
-
-                foreach (MethodInfo methodInfo in list)
-                {
-                    ParameterInfo[] targetArguments = methodInfo.GetParameters();
-                    if (arguments.Length != targetArguments.Length)
-                        continue;
-
-                    int compatibility = 0;
-                    object[] convertedArguments = new object[arguments.Length];
-
-                    for (int i = 0; i < arguments.Length; i++)
+                    if (argumentCompatibility < 0)
                     {
-                        int argumentCompatibility;
-                        convertedArguments[i] = arguments[i].ChangeTypeWithCompatibility(targetArguments[i].ParameterType, out argumentCompatibility);
-
-                        if (argumentCompatibility < 0)
-                        {
-                            compatibility = -1;
-                            break;
-                        }
-
-                        compatibility += argumentCompatibility;
-                    }
-
-                    if (compatibility < 0)
-                        continue;
-
-                    if (compatibility < minCompatibility)
-                    {
-                        mostCompatibleMethod = methodInfo;
-                        mostCompatibleConvertedArguments = convertedArguments;
-                        minCompatibility = compatibility;
-                    }
-
-                    if (compatibility == 0)
+                        compatibility = -1;
                         break;
+                    }
+
+                    compatibility += argumentCompatibility;
                 }
 
-                if (mostCompatibleMethod == null)
-                {
-                    Debug.Log(string.Format(ConsoleMethodAttribute.argumentMismatchError, name));
-                    ClearInputField();
+                if (compatibility < 0)
+                    continue;
 
-                    return;
+                if (compatibility < minCompatibility)
+                {
+                    mostCompatibleMethod = methodInfo;
+                    mostCompatibleConvertedArguments = convertedArguments;
+                    minCompatibility = compatibility;
                 }
 
-                try
-                {
-                    mostCompatibleMethod.AutoInvoke(y => targetIdList == null && targetNameList == null || targetIdList != null && targetIdList.Any(z => z == y.GetInstanceID()) || targetNameList != null && targetNameList.Any(z => z == y.name), mostCompatibleConvertedArguments);
-                }
-                catch (Exception)
-                {
-                    Debug.Log(string.Format(ConsoleMethodAttribute.runtimeError, name));
-                    return;
-                }
-                finally
-                {
-                    ClearInputField();
-                }
-            });
+                if (compatibility == 0)
+                    break;
+            }
+
+            if (mostCompatibleMethod == null)
+            {
+                Debug.Log(string.Format(ConsoleMethodAttribute.argumentMismatchError, name));
+                ClearInputField();
+
+                return;
+            }
+
+            try
+            {
+                mostCompatibleMethod.AutoInvoke(y => targetIdList == null && targetNameList == null || targetIdList != null && targetIdList.Any(z => z == y.GetInstanceID()) || targetNameList != null && targetNameList.Any(z => z == y.name), mostCompatibleConvertedArguments);
+            }
+            catch (Exception)
+            {
+                Debug.Log(string.Format(ConsoleMethodAttribute.runtimeError, name));
+                return;
+            }
+            finally
+            {
+                ClearInputField();
+            }
         }
 
         private void ClearInputField()
