@@ -33,8 +33,21 @@
                 x.GetMethods(ConsoleMethodAttribute.bindingFlags).Where(y => !y.IsAbstract && !y.IsGenericMethod && !y.IsDefined<ExtensionAttribute>()).ToList().ForEach(y =>
                 {
                     ConsoleMethodAttribute attribute = y.GetCustomAttribute<ConsoleMethodAttribute>();
-                    if (attribute == null || attribute.name == null)
+                    if (attribute == null)
                         return;
+
+                    string name = attribute.name;
+                    if (name == null || !name.IsMatch(RegexConstant.alphabetOrUnderscore))
+                    {
+                        Debug.LogError(ConsoleMethodAttribute.unsupportedCommandNameError.ReplacedBy(name));
+                        return;
+                    }
+
+                    if (name == "get" || name == "set")
+                    {
+                        Debug.LogError(ConsoleMethodAttribute.reservedKeywordError.ReplacedBy(name));
+                        return;
+                    }
 
                     ParameterInfo[] parameterInfos = y.GetParameters();
                     if (parameterInfos.Length >= 1 && parameterInfos[parameterInfos.Length - 1].IsDefined<ParamArrayAttribute>() || parameterInfos.ToList().Any(z =>
@@ -42,12 +55,33 @@
                         Type type = z.ParameterType;
                         return z.IsOut || type.IsByRef || !type.IsPrimitive && type != typeof(string);
                     }))
+                    {
+                        Debug.LogError(ConsoleMethodAttribute.unsupportedArgumentError.ReplacedBy(name));
                         return;
+                    }
 
                     if (!dictionary.ContainsKey(attribute.name))
                         dictionary[attribute.name] = new List<MethodInfo>();
 
                     List<MethodInfo> list = dictionary[attribute.name];
+
+                    if (list.Any(z =>
+                    {
+                        ParameterInfo[] otherParameterInfos = z.GetParameters();
+                        if (parameterInfos.Length != otherParameterInfos.Length)
+                            return false;
+
+                        for (int i = 0; i < parameterInfos.Length; i++)
+                            if (parameterInfos[i].ParameterType != otherParameterInfos[i].ParameterType)
+                                return false;
+
+                        return true;
+                    }))
+                    {
+                        Debug.LogError(ConsoleMethodAttribute.duplicatedCommandError.ReplacedBy(name));
+                        return;
+                    }
+
                     list.Add(y);
                 });
             });
@@ -77,7 +111,7 @@
 
             if (!dictionary.ContainsKey(name))
             {
-                Debug.Log(string.Format(ConsoleMethodAttribute.commandNotFoundError, name));
+                Debug.Log(ConsoleMethodAttribute.commandNotFoundError.ReplacedBy(name));
                 ClearInputField();
 
                 return;
@@ -128,7 +162,7 @@
 
             if (mostCompatibleMethod == null)
             {
-                Debug.Log(string.Format(ConsoleMethodAttribute.argumentMismatchError, name));
+                Debug.Log(ConsoleMethodAttribute.mismatchArgumentError.ReplacedBy(name));
                 ClearInputField();
 
                 return;
@@ -140,7 +174,7 @@
             }
             catch (Exception)
             {
-                Debug.Log(string.Format(ConsoleMethodAttribute.runtimeError, name));
+                Debug.Log(ConsoleMethodAttribute.runtimeError.ReplacedBy(name));
                 return;
             }
             finally
