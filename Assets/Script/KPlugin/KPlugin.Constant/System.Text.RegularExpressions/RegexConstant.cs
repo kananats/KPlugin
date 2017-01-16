@@ -28,6 +28,18 @@
             }
         }
 
+        private static Regex _alphabetOrUnderscore;
+        public static Regex alphabetOrUnderscore
+        {
+            get
+            {
+                if (_alphabetOrUnderscore == null)
+                    _alphabetOrUnderscore = new Regex("^[a-zA-Z_]+$");
+
+                return _alphabetOrUnderscore;
+            }
+        }
+
         private static Regex _alphanumeric;
         public static Regex alphanumeric
         {
