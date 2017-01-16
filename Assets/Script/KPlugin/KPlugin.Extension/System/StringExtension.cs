@@ -31,5 +31,10 @@
         {
             return Regex.Split(s, @"\s+").Where(x => x != string.Empty);
         }
+
+        public static string ReplacedBy(this string s, params object[] args)
+        {
+            return string.Format(s, args);
+        }
     }
 }
