@@ -2,10 +2,11 @@
 {
     using System.Linq;
     using System.Reflection;
+    using System.Runtime.CompilerServices;
     using UnityEditor;
     using UnityEngine;
     using Extension;
-
+   
     [CustomEditor(typeof(MonoBehaviour), true), CanEditMultipleObjects]
     public class KEditor : Editor
     {
@@ -18,7 +19,7 @@
             monoBehaviour = monoBehaviours[0];
 
             HideDefaultAttributeHandler();
-            monoBehaviour.GetType().GetMethods(SerializeMethodAttribute.bindingFlags).ToList().ForEach(x => SerializedMethodAttributeHandler(x));
+            monoBehaviour.GetType().GetMethods(SerializeMethodAttribute.bindingFlags).Where(x => !x.IsAbstract && !x.IsGenericMethod && !x.IsDefined<ExtensionAttribute>()).ToList().ForEach(x => SerializedMethodAttributeHandler(x));
 
             Repaint();
         }
@@ -36,10 +37,10 @@
             if (attribute == null)
                 return;
 
-            bool disableEditMode = !EditorApplication.isPlaying && !attribute.mode.HasFlag(Mode.Edit);
-            bool disablePlayMode = EditorApplication.isPlaying && !attribute.mode.HasFlag(Mode.Play);
+            bool disableForEditMode = !EditorApplication.isPlaying && !attribute.mode.HasFlag(Mode.Edit);
+            bool disableForPlayMode = EditorApplication.isPlaying && !attribute.mode.HasFlag(Mode.Play);
 
-            if (disableEditMode || disablePlayMode)
+            if (disableForEditMode || disableForPlayMode)
                 return;
 
             string name = "(" + methodInfo.ReturnType.Name + ") " + (attribute.name == null ? methodInfo.Name.ToRegular() : attribute.name);
