@@ -79,7 +79,7 @@
                     if (parameterInfos.Length >= 1 && parameterInfos[parameterInfos.Length - 1].IsDefined<ParamArrayAttribute>() || parameterInfos.ToList().Any(z =>
                     {
                         Type type = z.ParameterType;
-                        return z.IsOut || type.IsByRef || !type.IsPrimitive && type != typeof(string);
+                        return z.IsOut || type.IsByRef || !type.IsPrimitive && type != typeof(string) && !type.IsEnum;
                     }))
                     {
                         Debug.LogError(ConsoleMethodAttribute.unsupportedArgumentError.ReplacedBy(command));
@@ -136,7 +136,7 @@
 
                 return;
             }
-            
+
             if (command == "get")
             {
                 return;
@@ -154,7 +154,7 @@
 
                 return;
             }
-            
+
             List<MethodInfo> methodInfoList = methodInfoDictionary[command];
 
             MethodInfo mostCompatibleMethod = null;
