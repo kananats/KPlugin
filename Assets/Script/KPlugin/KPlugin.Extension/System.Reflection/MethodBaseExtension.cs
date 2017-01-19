@@ -3,6 +3,7 @@
     using System.Linq;
     using System.Reflection;
     using UnityEngine;
+    using Debug;
 
     public static class MethodBaseExtension
     {
@@ -38,7 +39,7 @@
             if (value == null)
                 return;
 
-            Debug.Log(string.Format("{0}() returns {1}", methodBase.Name, value));
+            Debug.Log(ConsoleAttribute.MethodReturnMessage.ReplacedBy(methodBase.Name, value));
         }
 
         private static void AutoInvokeStatic(this MethodBase methodBase, object[] parameters)
@@ -47,8 +48,7 @@
             if (value == null)
                 return;
 
-            Debug.Log(string.Format("{0}() returns {1}", methodBase.Name, value));
-            return;
+            Debug.Log(string.Format("Method '{0}' returns {1}", methodBase.Name, value));
         }
     }
 }

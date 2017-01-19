@@ -15,20 +15,26 @@
         [SerializeField]
         private InputField inputField;
 
-        private static readonly string unexpectedTokenError = "'{0}' is not a valid input string";
-
-        private Dictionary<string, List<FieldInfo>> fieldInfoDictionary;
-        private Dictionary<string, List<PropertyInfo>> propertyInfoDictionary;
+        private Dictionary<string, FieldInfo> fieldInfoDictionary;
+        private Dictionary<string, PropertyInfo> propertyInfoDictionary;
         private Dictionary<string, List<MethodInfo>> methodInfoDictionary;
 
         private List<Type> typeList;
 
         private string input;
 
-        private string command;
+        private new string name;
         private object[] arguments;
         private List<int> targetIdList;
         private List<string> targetNameList;
+
+        private Func<UnityEngine.Object, bool> predicate
+        {
+            get
+            {
+                return y => targetIdList == null && targetNameList == null || targetIdList != null && targetIdList.Any(z => z == y.GetInstanceID()) || targetNameList != null && targetNameList.Any(z => z == y.name);
+            }
+        }
 
         void Awake()
         {
@@ -41,37 +47,99 @@
         {
             typeList = Assembly.GetExecutingAssembly().GetTypes().Where(x => x.IsAbstract && x.IsSealed || !x.IsAbstract && !x.IsInterface && !x.IsGenericType && typeof(MonoBehaviour).IsAssignableFrom(x)).ToList();
 
+            fieldInfoDictionary = new Dictionary<string, FieldInfo>();
+            propertyInfoDictionary = new Dictionary<string, PropertyInfo>();
+            methodInfoDictionary = new Dictionary<string, List<MethodInfo>>();
+
             InitializeFieldInfoDictionary();
+            InitializePropertyInfoDictionary();
             InitializeMethodInfoDictionary();
         }
 
         private void InitializeFieldInfoDictionary()
         {
+            typeList.ForEach(x =>
+            {
+                x.GetFields(ConsoleAttribute.bindingFlags).ToList().ForEach(y =>
+                {
+                    ConsoleAttribute attribute = y.GetCustomAttribute<ConsoleAttribute>();
+                    if (attribute == null)
+                        return;
 
+                    string field = attribute.name;
+                    if (field == null || !field.IsMatch(RegexConstant.alphanumericOrUnderscore))
+                    {
+                        Debug.LogError(ConsoleAttribute.UnsupportedFieldNameError.ReplacedBy(field));
+                        return;
+                    }
+
+                    if (fieldInfoDictionary.ContainsKey(field) || propertyInfoDictionary.ContainsKey(field) || methodInfoDictionary.ContainsKey(field))
+                    {
+                        Debug.LogError(ConsoleAttribute.DuplicatedFieldError.ReplacedBy(field));
+                        return;
+                    }
+
+                    Type type = y.FieldType;
+                    if (!type.IsPrimitive && type != typeof(string) && !type.IsEnum)
+                    {
+                        Debug.LogError(ConsoleAttribute.UnsupportedFieldTypeError.ReplacedBy(field));
+                        return;
+                    }
+
+                    fieldInfoDictionary[field] = y;
+                });
+            });
+        }
+
+        private void InitializePropertyInfoDictionary()
+        {
+            typeList.ForEach(x =>
+            {
+                x.GetProperties(ConsoleAttribute.bindingFlags).ToList().ForEach(y =>
+                {
+                    ConsoleAttribute attribute = y.GetCustomAttribute<ConsoleAttribute>();
+                    if (attribute == null)
+                        return;
+
+                    string property = attribute.name;
+                    if (property == null || !property.IsMatch(RegexConstant.alphanumericOrUnderscore))
+                    {
+                        Debug.LogError(ConsoleAttribute.UnsupportedPropertyNameError.ReplacedBy(property));
+                        return;
+                    }
+
+                    if (fieldInfoDictionary.ContainsKey(property) || propertyInfoDictionary.ContainsKey(property) || methodInfoDictionary.ContainsKey(property))
+                    {
+                        Debug.LogError(ConsoleAttribute.DuplicatedPropertyError.ReplacedBy(property));
+                        return;
+                    }
+
+                    Type type = y.PropertyType;
+                    if (!type.IsPrimitive && type != typeof(string) && !type.IsEnum)
+                    {
+                        Debug.LogError(ConsoleAttribute.UnsupportedPropertyTypeError.ReplacedBy(property));
+                        return;
+                    }
+
+                    propertyInfoDictionary[property] = y;
+                });
+            });
         }
 
         private void InitializeMethodInfoDictionary()
         {
-            methodInfoDictionary = new Dictionary<string, List<MethodInfo>>();
-
             typeList.ForEach(x =>
             {
-                x.GetMethods(ConsoleMethodAttribute.bindingFlags).Where(y => !y.IsAbstract && !y.IsGenericMethod && !y.IsDefined<ExtensionAttribute>()).ToList().ForEach(y =>
+                x.GetMethods(ConsoleAttribute.bindingFlags).Where(y => !y.IsAbstract && !y.IsGenericMethod && !y.IsDefined<ExtensionAttribute>()).ToList().ForEach(y =>
                 {
-                    ConsoleMethodAttribute attribute = y.GetCustomAttribute<ConsoleMethodAttribute>();
+                    ConsoleAttribute attribute = y.GetCustomAttribute<ConsoleAttribute>();
                     if (attribute == null)
                         return;
 
-                    string command = attribute.command;
-                    if (command == null || !command.IsMatch(RegexConstant.alphabetOrUnderscore))
+                    string method = attribute.name;
+                    if (method == null || !method.IsMatch(RegexConstant.alphanumericOrUnderscore))
                     {
-                        Debug.LogError(ConsoleMethodAttribute.unsupportedMethodNameError.ReplacedBy(command));
-                        return;
-                    }
-
-                    if (command == "get" || command == "set")
-                    {
-                        Debug.LogError(ConsoleMethodAttribute.reservedKeywordError.ReplacedBy(command));
+                        Debug.LogError(ConsoleAttribute.UnsupportedMethodNameError.ReplacedBy(method));
                         return;
                     }
 
@@ -82,16 +150,22 @@
                         return z.IsOut || type.IsByRef || !type.IsPrimitive && type != typeof(string) && !type.IsEnum;
                     }))
                     {
-                        Debug.LogError(ConsoleMethodAttribute.unsupportedArgumentError.ReplacedBy(command));
+                        Debug.LogError(ConsoleAttribute.UnsupportedArgumentError.ReplacedBy(method));
                         return;
                     }
 
-                    if (!methodInfoDictionary.ContainsKey(attribute.command))
-                        methodInfoDictionary[attribute.command] = new List<MethodInfo>();
+                    if (fieldInfoDictionary.ContainsKey(method) || propertyInfoDictionary.ContainsKey(method))
+                    {
+                        Debug.LogError(ConsoleAttribute.DuplicatedMethodError.ReplacedBy(method));
+                        return;
+                    }
 
-                    List<MethodInfo> list = methodInfoDictionary[attribute.command];
+                    if (!methodInfoDictionary.ContainsKey(method))
+                        methodInfoDictionary[method] = new List<MethodInfo>();
 
-                    if (list.Any(z =>
+                    List<MethodInfo> methodInfoList = methodInfoDictionary[method];
+
+                    if (methodInfoList.Any(z =>
                     {
                         ParameterInfo[] otherParameterInfos = z.GetParameters();
                         if (parameterInfos.Length != otherParameterInfos.Length)
@@ -104,11 +178,11 @@
                         return true;
                     }))
                     {
-                        Debug.LogError(ConsoleMethodAttribute.duplicatedMethodError.ReplacedBy(command));
+                        Debug.LogError(ConsoleAttribute.DuplicatedMethodError.ReplacedBy(method));
                         return;
                     }
 
-                    list.Add(y);
+                    methodInfoList.Add(y);
                 });
             });
         }
@@ -120,42 +194,113 @@
 
             this.input = input;
 
-            command = null;
+            name = null;
             arguments = null;
             targetIdList = null;
             targetNameList = null;
-            
+
             try
             {
                 Parse();
             }
             catch (Exception)
             {
-                Debug.Log(unexpectedTokenError);
+                Debug.Log(ConsoleAttribute.UnexpectedInputError);
                 ClearInputField();
 
                 return;
             }
 
-            if (command == "get")
+            if (name != null && fieldInfoDictionary.ContainsKey(name))
+                FieldHandler();
+
+            else if (name != null && propertyInfoDictionary.ContainsKey(name))
+                PropertyHandler();
+
+            else if (name != null && methodInfoDictionary.ContainsKey(name))
+                MethodHandler();
+
+            else if (name != null)
+                Debug.Log(ConsoleAttribute.CommandNotFoundError.ReplacedBy(name));
+
+            ClearInputField();
+        }
+
+        private void FieldHandler()
+        {
+            FieldInfo fieldInfo = fieldInfoDictionary[name];
+            Type type = fieldInfo.FieldType;
+
+            switch (arguments.Length)
             {
-                return;
-            }
+                case 0:
+                    fieldInfo.AutoGetValue(predicate);
+                    return;
 
-            if (command == "set")
+                case 1:
+                    int compatibility;
+                    object boxedArgument = arguments[0].ChangeTypeWithCompatibility(type, out compatibility);
+
+                    if (compatibility < 0)
+                    {
+                        Debug.Log(ConsoleAttribute.FieldTypeMismatchError.ReplacedBy(name));
+                        return;
+                    }
+
+                    fieldInfo.AutoSetValue(predicate, arguments[0]);
+                    return;
+
+                default:
+                    Debug.Log(ConsoleAttribute.FieldTypeMismatchError.ReplacedBy(name));
+                    return;
+            }
+        }
+
+        private void PropertyHandler()
+        {
+            PropertyInfo propertyInfo = propertyInfoDictionary[name];
+            Type type = propertyInfo.PropertyType;
+
+            switch (arguments.Length)
             {
-                return;
+                case 0:
+                    if (!propertyInfo.CanRead)
+                    {
+                        Debug.Log(ConsoleAttribute.AccessorNotDefinedError.ReplacedBy("get", name));
+                        return;
+                    }
+
+                    propertyInfo.AutoGetValue(predicate);
+                    return;
+
+                case 1:
+                    if (!propertyInfo.CanWrite)
+                    {
+                        Debug.Log(ConsoleAttribute.AccessorNotDefinedError.ReplacedBy("set", name));
+                        return;
+                    }
+
+                    int compatibility;
+                    object boxedArgument = arguments[0].ChangeTypeWithCompatibility(type, out compatibility);
+
+                    if (compatibility < 0)
+                    {
+                        Debug.Log(ConsoleAttribute.PropertyTypeMismatchError.ReplacedBy(name));
+                        return;
+                    }
+
+                    propertyInfo.AutoSetValue(predicate, arguments[0]);
+                    return;
+
+                default:
+                    Debug.Log(ConsoleAttribute.PropertyTypeMismatchError.ReplacedBy(name));
+                    return;
             }
+        }
 
-            if (!methodInfoDictionary.ContainsKey(command))
-            {
-                Debug.Log(ConsoleMethodAttribute.methodNotFoundError.ReplacedBy(command));
-                ClearInputField();
-
-                return;
-            }
-
-            List<MethodInfo> methodInfoList = methodInfoDictionary[command];
+        private void MethodHandler()
+        {
+            List<MethodInfo> methodInfoList = methodInfoDictionary[name];
 
             MethodInfo mostCompatibleMethod = null;
             object[] mostCompatibleBoxedArguments = null;
@@ -200,7 +345,7 @@
 
             if (mostCompatibleMethod == null)
             {
-                Debug.Log(ConsoleMethodAttribute.argumentTypeMismatchError.ReplacedBy(command));
+                Debug.Log(ConsoleAttribute.ArgumentTypeMismatchError.ReplacedBy(name));
                 ClearInputField();
 
                 return;
@@ -208,16 +353,12 @@
 
             try
             {
-                mostCompatibleMethod.AutoInvoke(y => targetIdList == null && targetNameList == null || targetIdList != null && targetIdList.Any(z => z == y.GetInstanceID()) || targetNameList != null && targetNameList.Any(z => z == y.name), mostCompatibleBoxedArguments);
+                mostCompatibleMethod.AutoInvoke(predicate, mostCompatibleBoxedArguments);
             }
             catch (Exception)
             {
-                Debug.Log(ConsoleMethodAttribute.runtimeError.ReplacedBy(command));
+                Debug.Log(ConsoleAttribute.MethodRuntimeError.ReplacedBy(name));
                 return;
-            }
-            finally
-            {
-                ClearInputField();
             }
         }
 
@@ -236,12 +377,12 @@
 
             input.SplitByWhiteSpace().ToList().ForEach(x =>
             {
-                if (command == null)
+                if (name == null)
                 {
                     if (!x.IsMatch(RegexConstant.alphabet))
                         throw new NotSupportedException();
 
-                    command = x;
+                    name = x;
                     return;
                 }
 

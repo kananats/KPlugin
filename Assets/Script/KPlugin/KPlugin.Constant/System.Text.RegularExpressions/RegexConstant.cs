@@ -51,5 +51,17 @@
                 return _alphanumeric;
             }
         }
+
+        private static Regex _alphanumericOrUnderscore;
+        public static Regex alphanumericOrUnderscore
+        {
+            get
+            {
+                if (_alphanumericOrUnderscore == null)
+                    _alphanumericOrUnderscore = new Regex("^[a-zA-Z0-9_]+$");
+
+                return _alphanumericOrUnderscore;
+            }
+        }
     }
 }
