@@ -8,6 +8,7 @@
     using UnityEngine;
     using UnityEngine.UI;
     using Extension;
+    using Extension.Internal;
     using Constant;
 
     public class Console : MonoBehaviour
