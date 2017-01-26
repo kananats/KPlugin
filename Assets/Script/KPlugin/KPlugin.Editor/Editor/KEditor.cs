@@ -13,7 +13,7 @@
         private MonoBehaviour[] monoBehaviours;
         private MonoBehaviour monoBehaviour;
 
-        public override void OnInspectorGUI()
+        override public void OnInspectorGUI()
         {
             monoBehaviours = targets.Cast<MonoBehaviour>().ToArray();
             monoBehaviour = monoBehaviours[0];
