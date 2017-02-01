@@ -1,11 +1,11 @@
-﻿namespace KPlugin.Extension
+﻿namespace KPlugin.Extension.Internal
 {
     using System.Linq;
     using System.Reflection;
     using UnityEngine;
     using Debug;
 
-    public static class PropertyInfoExtension
+    public static class PropertyInfoExtensionInternal
     {
         public static void AutoGetValue(this PropertyInfo propertyInfo)
         {

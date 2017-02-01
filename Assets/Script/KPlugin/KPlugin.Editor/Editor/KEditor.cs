@@ -6,6 +6,7 @@
     using UnityEditor;
     using UnityEngine;
     using Extension;
+    using Extension.Internal;
    
     [CustomEditor(typeof(MonoBehaviour), true), CanEditMultipleObjects]
     public class KEditor : Editor

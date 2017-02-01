@@ -1,11 +1,11 @@
-﻿namespace KPlugin.Extension
+﻿namespace KPlugin.Extension.Internal
 {
     using System.Linq;
     using System.Reflection;
     using UnityEngine;
     using Debug;
 
-    public static class FieldInfoExtension
+    public static class FieldInfoExtensionInternal
     {
         public static void AutoGetValue(this FieldInfo fieldInfo)
         {

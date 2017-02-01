@@ -1,11 +1,11 @@
-﻿namespace KPlugin.Extension
+﻿namespace KPlugin.Extension.Internal
 {
     using System.Linq;
     using System.Reflection;
     using UnityEngine;
     using Debug;
 
-    public static class MethodBaseExtension
+    public static class MethodBaseExtensionInternal
     {
         public static void AutoInvoke(this MethodBase methodBase, object[] parameters)
         {
