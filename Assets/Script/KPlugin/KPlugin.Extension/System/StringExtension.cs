@@ -3,6 +3,7 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Text.RegularExpressions;
+    using Common;
 
     public static class StringExtension
     {
@@ -35,6 +36,11 @@
         public static string ReplacedBy(this string s, params object[] args)
         {
             return string.Format(s, args);
+        }
+
+        public static KString Rich(this string s)
+        {
+            return new KString(s);
         }
     }
 }
