@@ -22,7 +22,7 @@
                 if (GetComponentInChildren(x) != null)
                     return;
 
-                GameObject gameObject = new GameObject(x.Name.ToRegular());
+                GameObject gameObject = new GameObject(x.Name.Regular());
                 gameObject.SetParent(this);
                 gameObject.AddComponent(x);
             });

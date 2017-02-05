@@ -1,13 +1,12 @@
-﻿namespace KPlugin.Common
+﻿namespace KPlugin.Common.Internal
 {
+    using System.Text.RegularExpressions;
     using UnityEngine;
+    using Extension;
 
     public sealed class KString
     {
         private string text;
-
-        private bool upper;
-        private bool lower;
 
         private int? size;
         private Color32? color;
@@ -15,9 +14,14 @@
         private bool bold;
         private bool italic;
 
-        public KString(string text)
+        private KString(string text)
         {
             this.text = text;
+        }
+
+        public static implicit operator KString(string text)
+        {
+            return new KString(text);
         }
 
         public static implicit operator string(KString text)
@@ -49,21 +53,38 @@
             return this;
         }
 
-        public KString Upper(bool upper = true)
+        public KString Upper()
         {
-            this.upper = upper;
-            if (upper)
-                lower = false;
-
+            text = text.Upper();
             return this;
         }
 
-        public KString Lower(bool lower = true)
+        public KString Lower()
         {
-            this.lower = lower;
-            if (lower)
-                upper = false;
+            text = text.Lower();
+            return this;
+        }
 
+        public KString Capital()
+        {
+            text = text.Capital();
+            return this;
+        }
+
+        public KString Regular()
+        {
+            text = text.Regular();
+            return this;
+        }
+
+        public bool IsMatch(Regex regex)
+        {
+            return text.IsMatch(regex);
+        }
+
+        public KString ReplacedBy(params object[] args)
+        {
+            text = text.ReplacedBy(args); 
             return this;
         }
 
@@ -75,12 +96,6 @@
         override public string ToString()
         {
             string text = this.text;
-
-            if (upper)
-                text = text.ToUpper();
-
-            else if (lower)
-                text = text.ToLower();
 
             if (size != null)
                 text = "<size=" + size.Value + ">" + text + "</size>";
@@ -98,4 +113,3 @@
         }
     }
 }
-

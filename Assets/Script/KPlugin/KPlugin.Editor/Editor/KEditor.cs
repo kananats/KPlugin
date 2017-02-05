@@ -44,7 +44,7 @@
             if (disableForEditMode || disableForPlayMode)
                 return;
 
-            string name = "(" + methodInfo.ReturnType.Name + ") " + (attribute.name == null ? methodInfo.Name.ToRegular() : attribute.name);
+            string name = "(" + methodInfo.ReturnType.Name + ") " + (attribute.name == null ? methodInfo.Name.Regular() : attribute.name);
             if (!GUILayout.Button(name))
                 return;
 
