@@ -37,14 +37,14 @@
         {
             object value = fieldInfo.GetValue(obj);
 
-            Debug.Log(ConsoleAttribute.FieldGetMessage.ReplacedBy(fieldInfo.Name, value));
+            Debug.Log(ConsoleAttribute.fieldGetMessage.ReplacedBy(fieldInfo.Name, value));
         }
 
         private static void AutoGetValueStatic(this FieldInfo fieldInfo)
         {
             object value = fieldInfo.GetValue(null);
 
-            Debug.Log(ConsoleAttribute.FieldGetMessage.ReplacedBy(fieldInfo.Name, value));
+            Debug.Log(ConsoleAttribute.fieldGetMessage.ReplacedBy(fieldInfo.Name, value));
         }
 
         public static void AutoSetValue(this FieldInfo fieldInfo, object value)

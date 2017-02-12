@@ -1,5 +1,6 @@
 ﻿namespace KPlugin.Editor
 {
+    using System;
     using System.Linq;
     using System.Reflection;
     using System.Runtime.CompilerServices;
@@ -7,7 +8,7 @@
     using UnityEngine;
     using Extension;
     using Extension.Internal;
-   
+
     [CustomEditor(typeof(MonoBehaviour), true), CanEditMultipleObjects]
     public class KEditor : Editor
     {
@@ -20,7 +21,16 @@
             monoBehaviour = monoBehaviours[0];
 
             HideDefaultAttributeHandler();
-            monoBehaviour.GetType().GetMethods(SerializeMethodAttribute.bindingFlags).Where(x => !x.IsAbstract && !x.IsGenericMethod && !x.IsDefined<ExtensionAttribute>()).ToList().ForEach(x => SerializedMethodAttributeHandler(x));
+            monoBehaviour.GetType().GetMethods(SerializeMethodAttribute.bindingFlags).Where(x =>
+            {
+                ParameterInfo[] parameterInfos = x.GetParameters();
+
+                return !x.IsAbstract && !x.IsGenericMethod && !x.IsDefined<ExtensionAttribute>() && (parameterInfos.Length == 0 || !parameterInfos[parameterInfos.Length - 1].IsDefined<ParamArrayAttribute>()) && !parameterInfos.ToList().Any(y =>
+                {
+                    Type type = y.ParameterType;
+                    return y.IsOut || type.IsByRef || !y.IsOptional;
+                });
+            }).ToList().ForEach(x => SerializedMethodAttributeHandler(x));
 
             Repaint();
         }

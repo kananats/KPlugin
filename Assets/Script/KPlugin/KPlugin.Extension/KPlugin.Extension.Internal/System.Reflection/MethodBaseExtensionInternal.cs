@@ -3,7 +3,7 @@
     using System.Linq;
     using System.Reflection;
     using UnityEngine;
-    using Debug;
+    using Editor;
 
     public static class MethodBaseExtensionInternal
     {
@@ -24,31 +24,41 @@
 
         public static void AutoInvoke(this MethodBase methodBase, Object[] objects, System.Func<Object, bool> predicate, object[] parameters)
         {
+            ParameterInfo[] parameterInfos = methodBase.GetParameters();
+
+            int parametersLength = parameters == null ? 0 : parameters.Length;
+            int fixedParametersLength = parameterInfos == null ? 0 : parameterInfos.Length;
+
+            object[] fixedParameters = fixedParametersLength == 0 ? null : new object[fixedParametersLength];
+
+            for (int i = 0; i < fixedParametersLength; i++)
+                fixedParameters[i] = i < parametersLength ? parameters[i] : parameterInfos[i].DefaultValue;
+
             if (methodBase.IsStatic)
             {
-                methodBase.AutoInvokeStatic(parameters);
+                methodBase.AutoInvokeStatic(fixedParameters);
                 return;
             }
 
-            objects.Where(predicate).ToList().ForEach(x => methodBase.AutoInvokeInstance(x, parameters));
+            objects.Where(predicate).ToList().ForEach(x => methodBase.AutoInvokeInstance(x, fixedParameters));
         }
 
-        private static void AutoInvokeInstance(this MethodBase methodBase, object obj, object[] parameters)
+        private static void AutoInvokeInstance(this MethodBase methodBase, object obj, object[] fixedParameters)
         {
-            object value = methodBase.Invoke(obj, parameters);
+            object value = methodBase.Invoke(obj, fixedParameters);
             if (value == null)
                 return;
 
-            Debug.Log(ConsoleAttribute.MethodReturnMessage.ReplacedBy(methodBase.Name, value));
+            Debug.Log(SerializeMethodAttribute.returnMessage.ReplacedBy(methodBase.Name, value.ToSimplifiedString()));
         }
 
-        private static void AutoInvokeStatic(this MethodBase methodBase, object[] parameters)
+        private static void AutoInvokeStatic(this MethodBase methodBase, object[] fixedParameters)
         {
-            object value = methodBase.Invoke(null, parameters);
+            object value = methodBase.Invoke(null, fixedParameters);
             if (value == null)
                 return;
 
-            Debug.Log(string.Format("Method '{0}' returns {1}", methodBase.Name, value));
+            Debug.Log(SerializeMethodAttribute.returnMessage.ReplacedBy(methodBase.Name, value.ToSimplifiedString()));
         }
     }
 }

@@ -5,6 +5,7 @@
     using System.Linq;
     using System.Collections.Generic;
     using System.Reflection;
+    using UnityEngine;
     using Internal;
 
     public static class ObjectExtension
@@ -16,6 +17,11 @@
             obj.GetType().GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).ToList().ForEach(x => dictionary[x.Name] = x.GetValue(obj));
 
             return dictionary;
+        }
+
+        public static void Log(this object obj, bool useToSimplifiedString = true)
+        {
+            Debug.Log(useToSimplifiedString ? obj.ToSimplifiedString() : obj.ToString());
         }
 
         public static string ToSimplifiedString(this object obj, bool showType = false)
