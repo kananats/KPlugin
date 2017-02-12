@@ -49,7 +49,7 @@
                 IDictionary dictionary = obj as IDictionary;
                 string s = "{";
                 foreach (object o in dictionary.Keys)
-                    s += "\"{0}\": {1}, ".ReplacedBy(ToSimplifiedString(o, showType), ToSimplifiedString(dictionary[o], showType));
+                    s += "\"{0}\": {1}, ".ReplacedBy(o.ToSimplifiedString(showType), dictionary[o].ToSimplifiedString(showType));
 
                 return s.Length >= 2 ? s.Substring(0, s.Length - 2) + "}" : "{ }";
             }
@@ -60,7 +60,7 @@
                 IEnumerable enumerable = obj as IEnumerable;
                 string s = "[";
                 foreach (object o in enumerable)
-                    s += "{0}, ".ReplacedBy(ToSimplifiedString(o, showType));
+                    s += "{0}, ".ReplacedBy(o.ToSimplifiedString(showType));
 
                 return s.Length >= 2 ? s.Substring(0, s.Length - 2) + "]" : "{ }";
             }
