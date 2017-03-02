@@ -1,4 +1,5 @@
-﻿namespace KPlugin.Common
+﻿
+namespace KPlugin
 {
     using UnityEngine;
 
@@ -20,7 +21,7 @@
 
                         if (FindObjectsOfType(typeof(T)).Length > 1)
                         {
-                            Debug.LogError("[Singleton] Something went really wrong - there should never be more than 1 singleton! Reopening the scene might fix it.");
+                            UnityEngine.Debug.LogError("[Singleton] Something went really wrong - there should never be more than 1 singleton! Reopening the scene might fix it.");
                             return _instance;
                         }
 
@@ -32,7 +33,7 @@
 
                             DontDestroyOnLoad(singleton);
 
-                            Debug.Log("[Singleton] An instance of " + typeof(T) + " is needed in the scene, so '" + singleton + "' was created with DontDestroyOnLoad.");
+                            UnityEngine.Debug.Log("[Singleton] An instance of " + typeof(T) + " is needed in the scene, so '" + singleton + "' was created with DontDestroyOnLoad.");
                         }
                     }
 

@@ -240,7 +240,7 @@
 
                 case 1:
                     int compatibility;
-                    object boxedArgument = arguments[0].ChangeTypeWithCompatibility(type, out compatibility);
+                    arguments[0].ChangeTypeWithCompatibility(type, out compatibility);
 
                     if (compatibility < 0)
                     {
@@ -282,7 +282,7 @@
                     }
 
                     int compatibility;
-                    object boxedArgument = arguments[0].ChangeTypeWithCompatibility(type, out compatibility);
+                    arguments[0].ChangeTypeWithCompatibility(type, out compatibility);
 
                     if (compatibility < 0)
                     {
