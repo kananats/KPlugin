@@ -49,7 +49,7 @@
             if (value == null)
                 return;
 
-            Debug.Log(SerializeMethodAttribute.returnMessage.ReplacedBy(methodBase.Name, value.ToSimplifiedString()));
+            Debug.Log(SerializeMethodAttribute.returnMessage.ReplacedBy(methodBase.Name, value.ToSimpleString()));
         }
 
         private static void AutoInvokeStatic(this MethodBase methodBase, object[] fixedParameters)
@@ -58,7 +58,7 @@
             if (value == null)
                 return;
 
-            Debug.Log(SerializeMethodAttribute.returnMessage.ReplacedBy(methodBase.Name, value.ToSimplifiedString()));
+            Debug.Log(SerializeMethodAttribute.returnMessage.ReplacedBy(methodBase.Name, value.ToSimpleString()));
         }
     }
 }

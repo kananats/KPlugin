@@ -4,7 +4,7 @@
 
     public static class ArrayExtensionInternal
     {
-        public static string ToSimplifiedString(this Array array, bool showType = false)
+        public static string ToSimpleString(this Array array, bool showType = false)
         {
             int rank = array.Rank;
             int[] lengths = new int[rank];
@@ -12,10 +12,10 @@
                 lengths[i] = array.GetLength(i);
 
             int[] indices = new int[rank];
-            return array.ToSimplifiedString(lengths, indices, 0, showType);
+            return array.ToSimpleString(lengths, indices, 0, showType);
         }
 
-        public static string ToSimplifiedString(this Array array, int[] lengths, int[] indices, int index, bool showType = false)
+        public static string ToSimpleString(this Array array, int[] lengths, int[] indices, int index, bool showType = false)
         {
             string s = "{";
             int i;
@@ -23,14 +23,14 @@
                 for (i = 0; i < lengths[index]; i++)
                 {
                     indices[index] = i;
-                    s = s + array.GetValue(indices).ToSimplifiedString(showType) + ", ";
+                    s = s + array.GetValue(indices).ToSimpleString(showType) + ", ";
                 }
 
             else
                 for (i = 0; i < lengths[index]; i++)
                 {
                     indices[index] = i;
-                    s = s + array.ToSimplifiedString(lengths, indices, index + 1).ToSimplifiedString(showType) + ", ";
+                    s = s + array.ToSimpleString(lengths, indices, index + 1).ToSimpleString(showType) + ", ";
                 }
 
             return s.Length >= 2 ? s.Substring(0, s.Length - 2) + "}" : "{ }";
