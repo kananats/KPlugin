@@ -11,7 +11,6 @@
     using Extension.Internal;
     using Constant;
 
-    [RequireComponent(typeof(InputField))]
     public class Console : MonoBehaviour
     {
         [SerializeField]
