@@ -70,20 +70,20 @@
                     string field = attribute.name;
                     if (field == null || !field.IsMatch(RegexConstant.alphanumericOrUnderscore))
                     {
-                        Debug.LogError(ConsoleAttribute.UnsupportedFieldNameError.ReplacedBy(field));
+                        Debug.LogError(ConsoleAttribute.unsupportedFieldNameError.ReplacedBy(field));
                         return;
                     }
 
                     if (fieldInfoDictionary.ContainsKey(field) || propertyInfoDictionary.ContainsKey(field) || methodInfoDictionary.ContainsKey(field))
                     {
-                        Debug.LogError(ConsoleAttribute.DuplicatedFieldError.ReplacedBy(field));
+                        Debug.LogError(ConsoleAttribute.duplicatedFieldError.ReplacedBy(field));
                         return;
                     }
 
                     Type type = y.FieldType;
                     if (!type.IsPrimitive && type != typeof(string) && !type.IsEnum)
                     {
-                        Debug.LogError(ConsoleAttribute.UnsupportedFieldTypeError.ReplacedBy(field));
+                        Debug.LogError(ConsoleAttribute.unsupportedFieldTypeError.ReplacedBy(field));
                         return;
                     }
 
@@ -105,20 +105,20 @@
                     string property = attribute.name;
                     if (property == null || !property.IsMatch(RegexConstant.alphanumericOrUnderscore))
                     {
-                        Debug.LogError(ConsoleAttribute.UnsupportedPropertyNameError.ReplacedBy(property));
+                        Debug.LogError(ConsoleAttribute.unsupportedPropertyNameError.ReplacedBy(property));
                         return;
                     }
 
                     if (fieldInfoDictionary.ContainsKey(property) || propertyInfoDictionary.ContainsKey(property) || methodInfoDictionary.ContainsKey(property))
                     {
-                        Debug.LogError(ConsoleAttribute.DuplicatedPropertyError.ReplacedBy(property));
+                        Debug.LogError(ConsoleAttribute.duplicatedPropertyError.ReplacedBy(property));
                         return;
                     }
 
                     Type type = y.PropertyType;
                     if (!type.IsPrimitive && type != typeof(string) && !type.IsEnum)
                     {
-                        Debug.LogError(ConsoleAttribute.UnsupportedPropertyTypeError.ReplacedBy(property));
+                        Debug.LogError(ConsoleAttribute.unsupportedPropertyTypeError.ReplacedBy(property));
                         return;
                     }
 
@@ -140,7 +140,7 @@
                     string method = attribute.name;
                     if (method == null || !method.IsMatch(RegexConstant.alphanumericOrUnderscore))
                     {
-                        Debug.LogError(ConsoleAttribute.UnsupportedMethodNameError.ReplacedBy(method));
+                        Debug.LogError(ConsoleAttribute.unsupportedMethodNameError.ReplacedBy(method));
                         return;
                     }
 
@@ -151,13 +151,13 @@
                         return z.IsOut || type.IsByRef || !type.IsPrimitive && type != typeof(string) && !type.IsEnum;
                     }))
                     {
-                        Debug.LogError(ConsoleAttribute.UnsupportedArgumentError.ReplacedBy(method));
+                        Debug.LogError(ConsoleAttribute.unsupportedArgumentError.ReplacedBy(method));
                         return;
                     }
 
                     if (fieldInfoDictionary.ContainsKey(method) || propertyInfoDictionary.ContainsKey(method))
                     {
-                        Debug.LogError(ConsoleAttribute.DuplicatedMethodError.ReplacedBy(method));
+                        Debug.LogError(ConsoleAttribute.duplicatedMethodError.ReplacedBy(method));
                         return;
                     }
 
@@ -179,7 +179,7 @@
                         return true;
                     }))
                     {
-                        Debug.LogError(ConsoleAttribute.DuplicatedMethodError.ReplacedBy(method));
+                        Debug.LogError(ConsoleAttribute.duplicatedMethodError.ReplacedBy(method));
                         return;
                     }
 
@@ -206,7 +206,7 @@
             }
             catch (Exception)
             {
-                Debug.Log(ConsoleAttribute.UnexpectedInputError);
+                Debug.Log(ConsoleAttribute.unexpectedInputError);
                 ClearInputField();
 
                 return;
@@ -222,7 +222,7 @@
                 MethodHandler();
 
             else if (name != null)
-                Debug.Log(ConsoleAttribute.CommandNotFoundError.ReplacedBy(name));
+                Debug.Log(ConsoleAttribute.commandNotFoundError.ReplacedBy(name));
 
             ClearInputField();
         }
@@ -244,7 +244,7 @@
 
                     if (compatibility < 0)
                     {
-                        Debug.Log(ConsoleAttribute.FieldTypeMismatchError.ReplacedBy(name));
+                        Debug.Log(ConsoleAttribute.fieldTypeMismatchError.ReplacedBy(name));
                         return;
                     }
 
@@ -252,7 +252,7 @@
                     return;
 
                 default:
-                    Debug.Log(ConsoleAttribute.FieldTypeMismatchError.ReplacedBy(name));
+                    Debug.Log(ConsoleAttribute.fieldTypeMismatchError.ReplacedBy(name));
                     return;
             }
         }
@@ -267,7 +267,7 @@
                 case 0:
                     if (!propertyInfo.CanRead)
                     {
-                        Debug.Log(ConsoleAttribute.AccessorNotDefinedError.ReplacedBy("get", name));
+                        Debug.Log(ConsoleAttribute.accessorNotDefinedError.ReplacedBy("get", name));
                         return;
                     }
 
@@ -277,7 +277,7 @@
                 case 1:
                     if (!propertyInfo.CanWrite)
                     {
-                        Debug.Log(ConsoleAttribute.AccessorNotDefinedError.ReplacedBy("set", name));
+                        Debug.Log(ConsoleAttribute.accessorNotDefinedError.ReplacedBy("set", name));
                         return;
                     }
 
@@ -286,7 +286,7 @@
 
                     if (compatibility < 0)
                     {
-                        Debug.Log(ConsoleAttribute.PropertyTypeMismatchError.ReplacedBy(name));
+                        Debug.Log(ConsoleAttribute.propertyTypeMismatchError.ReplacedBy(name));
                         return;
                     }
 
@@ -294,7 +294,7 @@
                     return;
 
                 default:
-                    Debug.Log(ConsoleAttribute.PropertyTypeMismatchError.ReplacedBy(name));
+                    Debug.Log(ConsoleAttribute.propertyTypeMismatchError.ReplacedBy(name));
                     return;
             }
         }
@@ -346,7 +346,7 @@
 
             if (mostCompatibleMethod == null)
             {
-                Debug.Log(ConsoleAttribute.ArgumentTypeMismatchError.ReplacedBy(name));
+                Debug.Log(ConsoleAttribute.argumentTypeMismatchError.ReplacedBy(name));
                 ClearInputField();
 
                 return;
@@ -358,7 +358,7 @@
             }
             catch (Exception)
             {
-                Debug.Log(ConsoleAttribute.MethodRuntimeError.ReplacedBy(name));
+                Debug.Log(ConsoleAttribute.methodRuntimeError.ReplacedBy(name));
                 return;
             }
         }

@@ -5,6 +5,7 @@
     using System.Linq;
     using System.Collections.Generic;
     using System.Reflection;
+    using UnityEngine;
     using Internal;
 
     public static class ObjectExtension
@@ -18,7 +19,12 @@
             return dictionary;
         }
 
-        public static string ToSimplifiedString(this object obj, bool showType = false)
+        public static void Log(this object obj, bool useSimpleString = true)
+        {
+            Debug.Log(useSimpleString ? obj.ToSimpleString() : obj.ToString());
+        }
+
+        public static string ToSimpleString(this object obj, bool showType = false)
         {
             // Null
             if (obj == null)
@@ -34,7 +40,7 @@
             if (type.IsArray)
             {
                 Array array = obj as Array;
-                return ArrayExtensionInternal.ToSimplifiedString(array, showType);
+                return ArrayExtensionInternal.ToSimpleString(array, showType);
             }
 
             // IDictionary
@@ -43,7 +49,7 @@
                 IDictionary dictionary = obj as IDictionary;
                 string s = "{";
                 foreach (object o in dictionary.Keys)
-                    s += "\"{0}\": {1}, ".ReplacedBy(ToSimplifiedString(o, showType), ToSimplifiedString(dictionary[o], showType));
+                    s += "\"{0}\": {1}, ".ReplacedBy(o.ToSimpleString(showType), dictionary[o].ToSimpleString(showType));
 
                 return s.Length >= 2 ? s.Substring(0, s.Length - 2) + "}" : "{ }";
             }
@@ -54,7 +60,7 @@
                 IEnumerable enumerable = obj as IEnumerable;
                 string s = "[";
                 foreach (object o in enumerable)
-                    s += "{0}, ".ReplacedBy(ToSimplifiedString(o, showType));
+                    s += "{0}, ".ReplacedBy(o.ToSimpleString(showType));
 
                 return s.Length >= 2 ? s.Substring(0, s.Length - 2) + "]" : "{ }";
             }
@@ -64,7 +70,7 @@
                 return (showType ? "({0})".ReplacedBy(type.Name) : "") + " " + obj.ToString();
 
             // General Class
-            return obj.ToDictionary().ToSimplifiedString(showType);
+            return obj.ToDictionary().ToSimpleString(showType);
         }
     }
 }

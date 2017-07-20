@@ -37,14 +37,14 @@
         {
             object value = propertyInfo.GetValue(obj, null);
 
-            Debug.Log(ConsoleAttribute.PropertyGetMessage.ReplacedBy(propertyInfo.Name, value));
+            Debug.Log(ConsoleAttribute.propertyGetMessage.ReplacedBy(propertyInfo.Name, value));
         }
 
         private static void AutoGetValueStatic(this PropertyInfo propertyInfo)
         {
             object value = propertyInfo.GetValue(null, null);
 
-            Debug.Log(ConsoleAttribute.PropertyGetMessage.ReplacedBy(propertyInfo.Name, value));
+            Debug.Log(ConsoleAttribute.propertyGetMessage.ReplacedBy(propertyInfo.Name, value));
         }
 
         public static void AutoSetValue(this PropertyInfo propertyInfo, object value)
