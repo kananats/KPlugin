@@ -39,7 +39,7 @@
             logTextList.SafeClear();
         }
 
-        [Console("log")]
+        [Console("save")]
         public void Save()
         {
 
