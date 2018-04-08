@@ -13,10 +13,34 @@
     using Constant.Internal;
 
     [RequireComponent(typeof(InputField))]
-    public class Console : MonoBehaviour
+    public class ConsoleInput : MonoBehaviour
     {
         [SerializeField]
         private InputField inputField;
+
+        private bool _focused;
+        private bool focused
+        {
+            get
+            {
+                return _focused;
+            }
+
+            set
+            {
+                if (!_focused && value)
+                {
+                    _focused = true;
+                    OnFocus();
+                    return;
+                }
+                if (focused && !value)
+                {
+                    _focused = false;
+                    OnLosingFocus();
+                }
+            }
+        }
 
         private Dictionary<string, FieldInfo> fieldInfoDictionary;
         private Dictionary<string, PropertyInfo> propertyInfoDictionary;
@@ -41,9 +65,26 @@
 
         void Awake()
         {
+            _focused = false;
+
             InitializeDictionary();
 
             inputField.onEndEdit.AddListener(Handler);
+        }
+
+        void Update()
+        {
+            focused = inputField.isFocused;
+        }
+
+        private void OnFocus()
+        {
+
+        }
+
+        private void OnLosingFocus()
+        {
+
         }
 
         private void InitializeDictionary()
@@ -229,9 +270,6 @@
 
                     break;
 
-                case Command.Clear:
-                    break;
-
                 case Command.Method:
                     if (methodInfoDictionary.ContainsKey(name))
                         MethodHandler();
@@ -396,7 +434,7 @@
 
             string option = null;
 
-            input.SplitByWhiteSpace().ToList().ForEach(x =>
+            input.SplitByWhiteSpaceExceptQuote().ToList().ForEach(x =>
             {
                 if (name == null)
                 {
@@ -411,12 +449,6 @@
 
                         case "set":
                             command = Command.Set;
-                            return;
-
-                        case "clear":
-                            return;
-
-                        case "save":
                             return;
 
                         default:

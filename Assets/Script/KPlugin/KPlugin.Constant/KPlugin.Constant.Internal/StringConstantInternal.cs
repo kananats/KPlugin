@@ -5,7 +5,7 @@
         // General
         public static readonly string unexpectedInputError = "String '{0}' is not valid input string";
         public static readonly string commandNotFoundError = "String '{0}' is not recognized as a command";
-        public static readonly string fieldOrPropertyNotFoundError = "'{0}' is not recognized as a field/ a property";
+        public static readonly string fieldOrPropertyNotFoundError = "'{0}' is not recognized as a field or property";
 
         // Field
         public static readonly string unsupportedFieldNameError = "Field '{0}' contains unsupported character(s)";

@@ -2,11 +2,12 @@
 {
     using System.Collections.Generic;
     using System.Linq;
-    using System.IO;
+    using System.Text;
     using System.Text.RegularExpressions;
     using UnityEngine;
     using Internal;
-    using System.Text;
+    using Constant;
+    using Constant.Internal;
 
     public static class StringExtension
     {
@@ -102,6 +103,11 @@
         public static IEnumerable<string> SplitByWhiteSpace(this string s)
         {
             return Regex.Split(s, @"\s+").Where(x => x != string.Empty);
+        }
+
+        public static IEnumerable<string> SplitByWhiteSpaceExceptQuote(this string s)
+        {
+            return Regex.Matches(s, @""".*?""|[^\s]+").Cast<Match>().Select(m => m.Value);
         }
 
         public static string ReplacedBy(this string s, params object[] args)

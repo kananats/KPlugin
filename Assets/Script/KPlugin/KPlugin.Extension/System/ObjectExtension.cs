@@ -21,7 +21,22 @@
 
         public static void Log(this object obj, bool useSimpleString = true)
         {
-            Debug.Log(useSimpleString ? obj.ToSimpleString() : obj.ToString());
+            obj.Log("'{0}'", useSimpleString);
+        }
+
+        public static void Log(this object obj, string format, bool useSimpleString = true)
+        {
+            Debug.Log(format.ReplacedBy(useSimpleString ? obj.ToSimpleString() : obj.ToString()));
+        }
+
+        public static void LogConsole(this object obj, bool useSimpleString = true)
+        {
+            obj.LogConsole("'{0}'", useSimpleString);
+        }
+
+        public static void LogConsole(this object obj, string format, bool useSimpleString = true)
+        {
+            Debug.Log(format.ReplacedBy(useSimpleString ? obj.ToSimpleString() : obj.ToString()));
         }
 
         public static string ToSimpleString(this object obj, bool showType = false)
@@ -32,9 +47,13 @@
 
             Type type = obj.GetType();
 
-            // Primitive, String
-            if (type.IsPrimitive || type == typeof(string))
+            // Primitive
+            if (type.IsPrimitive)
                 return (showType ? "({0}) ".ReplacedBy(type.Name) : "") + obj;
+
+            // String
+            if (type == typeof(string))
+                return (showType ? "({0}) ".ReplacedBy(type.Name) : "") + ("\"" + obj + "\"");
 
             // Array
             if (type.IsArray)

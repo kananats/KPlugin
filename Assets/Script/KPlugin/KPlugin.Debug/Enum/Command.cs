@@ -5,7 +5,6 @@
         Unknown,
         Get,
         Set,
-        Clear,
         Method,
     }
 }
