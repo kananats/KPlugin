@@ -275,7 +275,7 @@
 
             this.input = input;
 
-            consoleOutput.Log("User > " + input);
+            consoleOutput.Log(("User > " + input).Color(Color.green));
 
             inputHistory.Add(input);
             inputHistoryIndex = inputHistory.Count;

@@ -1,8 +1,7 @@
 ﻿namespace KPlugin.Debug
 {
     using UnityEngine;
-    using KPlugin;
-    using KPlugin.Extension;
+    using Extension;
 
     public class Console : SingletonMonoBehaviour<Console>
     {

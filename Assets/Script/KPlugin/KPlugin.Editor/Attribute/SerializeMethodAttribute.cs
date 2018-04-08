@@ -1,15 +1,10 @@
 ﻿namespace KPlugin.Editor
 {
     using System;
-    using System.Reflection;
 
     [AttributeUsage(AttributeTargets.Method)]
     public class SerializeMethodAttribute : Attribute
     {
-        public static BindingFlags bindingFlags = BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
-
-        public static readonly string returnMessage = "Method '{0}' returns {1}";
-
         public string name
         {
             get;

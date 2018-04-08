@@ -3,7 +3,8 @@
     using System.Linq;
     using System.Reflection;
     using UnityEngine;
-    using Editor;
+    using KPlugin.Debug;
+    using Constant.Internal;
 
     public static class MethodBaseExtensionInternal
     {
@@ -40,25 +41,35 @@
                 return;
             }
 
+            if (objects.Count(predicate) == 0)
+            {
+                Console.Log(StringConstantInternal.objectNotFoundWarning.Color(Color.yellow));
+                return;
+            }
+
             objects.Where(predicate).ToList().ForEach(x => methodBase.AutoInvokeInstance(x, fixedParameters));
         }
 
-        private static void AutoInvokeInstance(this MethodBase methodBase, object obj, object[] fixedParameters)
+        private static void AutoInvokeInstance(this MethodBase methodBase, Object obj, object[] fixedParameters)
         {
             object value = methodBase.Invoke(obj, fixedParameters);
-            if (value == null)
-                return;
 
-            Debug.Log(SerializeMethodAttribute.returnMessage.ReplacedBy(methodBase.Name, value.ToSimpleString()));
+            if (value == null)
+                Console.Log(StringConstantInternal.methodVoidInstanceMessage.ReplacedBy(methodBase.Name, obj.name, obj.GetInstanceID()));
+
+            else
+                Console.Log(StringConstantInternal.methodNonVoidInstanceMessage.ReplacedBy(methodBase.Name, obj.name, obj.GetInstanceID(), value.ToSimpleString()));
         }
 
         private static void AutoInvokeStatic(this MethodBase methodBase, object[] fixedParameters)
         {
             object value = methodBase.Invoke(null, fixedParameters);
-            if (value == null)
-                return;
 
-            Debug.Log(SerializeMethodAttribute.returnMessage.ReplacedBy(methodBase.Name, value.ToSimpleString()));
+            if (value == null)
+                Console.Log(StringConstantInternal.methodVoidStaticMessage.ReplacedBy(methodBase.Name));
+
+            else
+                Console.Log(StringConstantInternal.methodNonVoidStaticMessage.ReplacedBy(methodBase.Name, value.ToSimpleString()));
         }
     }
 }

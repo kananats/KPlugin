@@ -8,6 +8,7 @@
     using UnityEngine;
     using Extension;
     using Extension.Internal;
+    using Constant.Internal;
 
     [CustomEditor(typeof(MonoBehaviour), true), CanEditMultipleObjects]
     public class KEditor : Editor
@@ -21,7 +22,7 @@
             monoBehaviour = monoBehaviours[0];
 
             HideDefaultAttributeHandler();
-            monoBehaviour.GetType().GetMethods(SerializeMethodAttribute.bindingFlags).Where(x =>
+            monoBehaviour.GetType().GetMethods(BindingFlagsConstantInternal.bindingFlags).Where(x =>
             {
                 ParameterInfo[] parameterInfos = x.GetParameters();
 
