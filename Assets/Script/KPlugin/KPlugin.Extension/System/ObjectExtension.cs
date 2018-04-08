@@ -36,7 +36,7 @@
 
         public static void LogConsole(this object obj, string format, bool useSimpleString = true)
         {
-            Debug.Log(format.ReplacedBy(useSimpleString ? obj.ToSimpleString() : obj.ToString()));
+            KPlugin.Debug.Console.Log(format.ReplacedBy(useSimpleString ? obj.ToSimpleString() : obj.ToString()));
         }
 
         public static string ToSimpleString(this object obj, bool showType = false)

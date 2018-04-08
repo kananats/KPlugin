@@ -39,14 +39,14 @@
         {
             object value = fieldInfo.GetValue(obj);
 
-            Debug.Log(StringConstantInternal.fieldGetMessage.ReplacedBy(fieldInfo.Name, value));
+            KPlugin.Debug.Console.Log(StringConstantInternal.fieldGetMessage.ReplacedBy(fieldInfo.Name, value));
         }
 
         private static void AutoGetValueStatic(this FieldInfo fieldInfo)
         {
             object value = fieldInfo.GetValue(null);
 
-            Debug.Log(StringConstantInternal.fieldGetMessage.ReplacedBy(fieldInfo.Name, value));
+            KPlugin.Debug.Console.Log(StringConstantInternal.fieldGetMessage.ReplacedBy(fieldInfo.Name, value));
         }
 
         public static void AutoSetValue(this FieldInfo fieldInfo, object value)

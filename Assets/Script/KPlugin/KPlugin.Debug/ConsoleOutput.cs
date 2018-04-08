@@ -38,7 +38,6 @@
             visible = false;
         }
 
-        [Console("log")]
         public void Log(string message)
         {
             Text logText = Instantiate(logPrefab);

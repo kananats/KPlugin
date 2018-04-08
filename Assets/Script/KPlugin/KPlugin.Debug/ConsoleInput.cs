@@ -150,20 +150,20 @@
                     string field = attribute.name;
                     if (field == null || !field.IsMatch(RegexConstant.alphanumericOrUnderscore))
                     {
-                        Debug.LogError(StringConstantInternal.unsupportedFieldNameError.ReplacedBy(field));
+                        Console.Log(StringConstantInternal.unsupportedFieldNameError.ReplacedBy(field).Color(Color.red));
                         return;
                     }
 
                     if (fieldInfoDictionary.ContainsKey(field) || propertyInfoDictionary.ContainsKey(field) || methodInfoDictionary.ContainsKey(field))
                     {
-                        Debug.LogError(StringConstantInternal.duplicatedFieldError.ReplacedBy(field));
+                        Console.Log(StringConstantInternal.duplicatedFieldError.ReplacedBy(field).Color(Color.red));
                         return;
                     }
 
                     Type type = y.FieldType;
                     if (!type.IsPrimitive && type != typeof(string) && !type.IsEnum)
                     {
-                        Debug.LogError(StringConstantInternal.unsupportedFieldTypeError.ReplacedBy(field));
+                        Console.Log(StringConstantInternal.unsupportedFieldTypeError.ReplacedBy(field).Color(Color.red));
                         return;
                     }
 
@@ -185,20 +185,20 @@
                     string property = attribute.name;
                     if (property == null || !property.IsMatch(RegexConstant.alphanumericOrUnderscore))
                     {
-                        Debug.LogError(StringConstantInternal.unsupportedPropertyNameError.ReplacedBy(property));
+                        Console.Log(StringConstantInternal.unsupportedPropertyNameError.ReplacedBy(property).Color(Color.red));
                         return;
                     }
 
                     if (fieldInfoDictionary.ContainsKey(property) || propertyInfoDictionary.ContainsKey(property) || methodInfoDictionary.ContainsKey(property))
                     {
-                        Debug.LogError(StringConstantInternal.duplicatedPropertyError.ReplacedBy(property));
+                        Console.Log(StringConstantInternal.duplicatedPropertyError.ReplacedBy(property).Color(Color.red));
                         return;
                     }
 
                     Type type = y.PropertyType;
                     if (!type.IsPrimitive && type != typeof(string) && !type.IsEnum)
                     {
-                        Debug.LogError(StringConstantInternal.unsupportedPropertyTypeError.ReplacedBy(property));
+                        Console.Log(StringConstantInternal.unsupportedPropertyTypeError.ReplacedBy(property).Color(Color.red));
                         return;
                     }
 
@@ -220,7 +220,7 @@
                     string method = attribute.name;
                     if (method == null || !method.IsMatch(RegexConstant.alphanumericOrUnderscore))
                     {
-                        Debug.LogError(StringConstantInternal.unsupportedMethodNameError.ReplacedBy(method));
+                        Console.Log(StringConstantInternal.unsupportedMethodNameError.ReplacedBy(method).Color(Color.red));
                         return;
                     }
 
@@ -231,13 +231,13 @@
                         return z.IsOut || type.IsByRef || !type.IsPrimitive && type != typeof(string) && !type.IsEnum;
                     }))
                     {
-                        Debug.LogError(StringConstantInternal.unsupportedArgumentError.ReplacedBy(method));
+                        Console.Log(StringConstantInternal.unsupportedArgumentError.ReplacedBy(method).Color(Color.red));
                         return;
                     }
 
                     if (fieldInfoDictionary.ContainsKey(method) || propertyInfoDictionary.ContainsKey(method))
                     {
-                        Debug.LogError(StringConstantInternal.duplicatedMethodError.ReplacedBy(method));
+                        Console.Log(StringConstantInternal.duplicatedMethodError.ReplacedBy(method).Color(Color.red));
                         return;
                     }
 
@@ -259,7 +259,7 @@
                         return true;
                     }))
                     {
-                        Debug.LogError(StringConstantInternal.duplicatedMethodError.ReplacedBy(method));
+                        Console.Log(StringConstantInternal.duplicatedMethodError.ReplacedBy(method).Color(Color.red));
                         return;
                     }
 
@@ -274,6 +274,9 @@
                 return;
 
             this.input = input;
+
+            consoleOutput.Log("User > " + input);
+
             inputHistory.Add(input);
             inputHistoryIndex = inputHistory.Count;
 
@@ -288,7 +291,7 @@
             }
             catch (Exception)
             {
-                Debug.Log(StringConstantInternal.unexpectedInputError);
+                Console.Log(StringConstantInternal.unexpectedInputError);
                 ClearInputField();
 
                 return;
@@ -305,7 +308,7 @@
                         PropertyHandler();
 
                     else
-                        Debug.Log(StringConstantInternal.fieldOrPropertyNotFoundError.ReplacedBy(name));
+                        Console.Log(StringConstantInternal.fieldOrPropertyNotFoundError.ReplacedBy(name));
 
                     break;
 
@@ -314,7 +317,7 @@
                         MethodHandler();
 
                     else
-                        Debug.Log(StringConstantInternal.commandNotFoundError.ReplacedBy(name));
+                        Console.Log(StringConstantInternal.commandNotFoundError.ReplacedBy(name));
 
                     break;
 
@@ -341,7 +344,7 @@
 
                     if (compatibility < 0)
                     {
-                        Debug.Log(StringConstantInternal.fieldTypeMismatchError.ReplacedBy(name));
+                        Console.Log(StringConstantInternal.fieldTypeMismatchError.ReplacedBy(name).Color(Color.red));
                         return;
                     }
 
@@ -349,7 +352,7 @@
                     return;
 
                 default:
-                    Debug.Log(StringConstantInternal.fieldTypeMismatchError.ReplacedBy(name));
+                    Console.Log(StringConstantInternal.fieldTypeMismatchError.ReplacedBy(name).Color(Color.red));
                     return;
             }
         }
@@ -364,7 +367,7 @@
                 case 0:
                     if (!propertyInfo.CanRead)
                     {
-                        Debug.Log(StringConstantInternal.accessorNotDefinedError.ReplacedBy("get", name));
+                        Console.Log(StringConstantInternal.accessorNotDefinedError.ReplacedBy("get", name).Color(Color.red));
                         return;
                     }
 
@@ -374,7 +377,7 @@
                 case 1:
                     if (!propertyInfo.CanWrite)
                     {
-                        Debug.Log(StringConstantInternal.accessorNotDefinedError.ReplacedBy("set", name));
+                        Console.Log(StringConstantInternal.accessorNotDefinedError.ReplacedBy("set", name).Color(Color.red));
                         return;
                     }
 
@@ -383,7 +386,7 @@
 
                     if (compatibility < 0)
                     {
-                        Debug.Log(StringConstantInternal.propertyTypeMismatchError.ReplacedBy(name));
+                        Console.Log(StringConstantInternal.propertyTypeMismatchError.ReplacedBy(name).Color(Color.red));
                         return;
                     }
 
@@ -391,7 +394,7 @@
                     return;
 
                 default:
-                    Debug.Log(StringConstantInternal.propertyTypeMismatchError.ReplacedBy(name));
+                    Console.Log(StringConstantInternal.propertyTypeMismatchError.ReplacedBy(name).Color(Color.red));
                     return;
             }
         }
@@ -443,7 +446,7 @@
 
             if (mostCompatibleMethod == null)
             {
-                Debug.Log(StringConstantInternal.argumentTypeMismatchError.ReplacedBy(name));
+                Console.Log(StringConstantInternal.argumentTypeMismatchError.ReplacedBy(name).Color(Color.red));
                 ClearInputField();
 
                 return;
@@ -455,7 +458,7 @@
             }
             catch (Exception)
             {
-                Debug.Log(StringConstantInternal.methodRuntimeError.ReplacedBy(name));
+                Console.Log(StringConstantInternal.methodRuntimeError.ReplacedBy(name).Color(Color.red));
                 return;
             }
         }
