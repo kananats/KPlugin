@@ -21,6 +21,22 @@
         [SerializeField]
         private ConsoleOutput consoleOutput;
 
+        private Dictionary<string, FieldInfo> fieldInfoDictionary;
+        private Dictionary<string, PropertyInfo> propertyInfoDictionary;
+        private Dictionary<string, List<MethodInfo>> methodInfoDictionary;
+
+        private List<Type> typeList;
+
+        private string input;
+
+        private List<string> inputHistory;
+        private int inputHistoryIndex;
+
+        private Command command;
+        private new string name;
+        private object[] arguments;
+        private List<int> targetIdList;
+
         private bool _focused;
         private bool focused
         {
@@ -45,19 +61,6 @@
             }
         }
 
-        private Dictionary<string, FieldInfo> fieldInfoDictionary;
-        private Dictionary<string, PropertyInfo> propertyInfoDictionary;
-        private Dictionary<string, List<MethodInfo>> methodInfoDictionary;
-
-        private List<Type> typeList;
-
-        private string input;
-
-        private Command command;
-        private new string name;
-        private object[] arguments;
-        private List<int> targetIdList;
-
         private Func<UnityEngine.Object, bool> predicate
         {
             get
@@ -69,6 +72,8 @@
         void Awake()
         {
             _focused = false;
+            inputHistory = new List<string>();
+            inputHistoryIndex = 0;
 
             InitializeDictionary();
 
@@ -78,6 +83,35 @@
         void Update()
         {
             focused = inputField.isFocused;
+
+            if (!focused)
+                return;
+
+            if (Input.GetKeyDown(KeyCode.UpArrow))
+            {
+                if (inputHistoryIndex <= 0)
+                    return;
+
+                if (inputHistoryIndex == inputHistory.Count)
+                    input = inputField.text;
+
+                inputField.text = inputHistory[--inputHistoryIndex];
+            }
+
+            if (Input.GetKeyDown(KeyCode.DownArrow))
+            {
+                if (inputHistoryIndex >= inputHistory.Count)
+                    return;
+
+                if (inputHistoryIndex == inputHistory.Count - 1)
+                {
+                    inputField.text = input;
+                    inputHistoryIndex++;
+                    return;
+                }
+
+                inputField.text = inputHistory[++inputHistoryIndex];
+            }
         }
 
         private void OnFocus()
@@ -240,6 +274,8 @@
                 return;
 
             this.input = input;
+            inputHistory.Add(input);
+            inputHistoryIndex = inputHistory.Count;
 
             command = Command.Unknown;
             name = null;
