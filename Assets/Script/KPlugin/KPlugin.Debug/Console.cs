@@ -10,6 +10,7 @@
     using Extension;
     using Extension.Internal;
     using Constant;
+    using Constant.Internal;
 
     [RequireComponent(typeof(InputField))]
     public class Console : MonoBehaviour
@@ -25,6 +26,7 @@
 
         private string input;
 
+        private Command command;
         private new string name;
         private object[] arguments;
         private List<int> targetIdList;
@@ -61,7 +63,7 @@
         {
             typeList.ForEach(x =>
             {
-                x.GetFields(ConsoleAttribute.bindingFlags).ToList().ForEach(y =>
+                x.GetFields(BindingFlagsConstantInternal.bindingFlags).ToList().ForEach(y =>
                 {
                     ConsoleAttribute attribute = y.GetCustomAttribute<ConsoleAttribute>();
                     if (attribute == null)
@@ -70,20 +72,20 @@
                     string field = attribute.name;
                     if (field == null || !field.IsMatch(RegexConstant.alphanumericOrUnderscore))
                     {
-                        Debug.LogError(ConsoleAttribute.unsupportedFieldNameError.ReplacedBy(field));
+                        Debug.LogError(StringConstantInternal.unsupportedFieldNameError.ReplacedBy(field));
                         return;
                     }
 
                     if (fieldInfoDictionary.ContainsKey(field) || propertyInfoDictionary.ContainsKey(field) || methodInfoDictionary.ContainsKey(field))
                     {
-                        Debug.LogError(ConsoleAttribute.duplicatedFieldError.ReplacedBy(field));
+                        Debug.LogError(StringConstantInternal.duplicatedFieldError.ReplacedBy(field));
                         return;
                     }
 
                     Type type = y.FieldType;
                     if (!type.IsPrimitive && type != typeof(string) && !type.IsEnum)
                     {
-                        Debug.LogError(ConsoleAttribute.unsupportedFieldTypeError.ReplacedBy(field));
+                        Debug.LogError(StringConstantInternal.unsupportedFieldTypeError.ReplacedBy(field));
                         return;
                     }
 
@@ -96,7 +98,7 @@
         {
             typeList.ForEach(x =>
             {
-                x.GetProperties(ConsoleAttribute.bindingFlags).ToList().ForEach(y =>
+                x.GetProperties(BindingFlagsConstantInternal.bindingFlags).ToList().ForEach(y =>
                 {
                     ConsoleAttribute attribute = y.GetCustomAttribute<ConsoleAttribute>();
                     if (attribute == null)
@@ -105,20 +107,20 @@
                     string property = attribute.name;
                     if (property == null || !property.IsMatch(RegexConstant.alphanumericOrUnderscore))
                     {
-                        Debug.LogError(ConsoleAttribute.unsupportedPropertyNameError.ReplacedBy(property));
+                        Debug.LogError(StringConstantInternal.unsupportedPropertyNameError.ReplacedBy(property));
                         return;
                     }
 
                     if (fieldInfoDictionary.ContainsKey(property) || propertyInfoDictionary.ContainsKey(property) || methodInfoDictionary.ContainsKey(property))
                     {
-                        Debug.LogError(ConsoleAttribute.duplicatedPropertyError.ReplacedBy(property));
+                        Debug.LogError(StringConstantInternal.duplicatedPropertyError.ReplacedBy(property));
                         return;
                     }
 
                     Type type = y.PropertyType;
                     if (!type.IsPrimitive && type != typeof(string) && !type.IsEnum)
                     {
-                        Debug.LogError(ConsoleAttribute.unsupportedPropertyTypeError.ReplacedBy(property));
+                        Debug.LogError(StringConstantInternal.unsupportedPropertyTypeError.ReplacedBy(property));
                         return;
                     }
 
@@ -131,7 +133,7 @@
         {
             typeList.ForEach(x =>
             {
-                x.GetMethods(ConsoleAttribute.bindingFlags).Where(y => !y.IsAbstract && !y.IsGenericMethod && !y.IsDefined<ExtensionAttribute>()).ToList().ForEach(y =>
+                x.GetMethods(BindingFlagsConstantInternal.bindingFlags).Where(y => !y.IsAbstract && !y.IsGenericMethod && !y.IsDefined<ExtensionAttribute>()).ToList().ForEach(y =>
                 {
                     ConsoleAttribute attribute = y.GetCustomAttribute<ConsoleAttribute>();
                     if (attribute == null)
@@ -140,7 +142,7 @@
                     string method = attribute.name;
                     if (method == null || !method.IsMatch(RegexConstant.alphanumericOrUnderscore))
                     {
-                        Debug.LogError(ConsoleAttribute.unsupportedMethodNameError.ReplacedBy(method));
+                        Debug.LogError(StringConstantInternal.unsupportedMethodNameError.ReplacedBy(method));
                         return;
                     }
 
@@ -151,13 +153,13 @@
                         return z.IsOut || type.IsByRef || !type.IsPrimitive && type != typeof(string) && !type.IsEnum;
                     }))
                     {
-                        Debug.LogError(ConsoleAttribute.unsupportedArgumentError.ReplacedBy(method));
+                        Debug.LogError(StringConstantInternal.unsupportedArgumentError.ReplacedBy(method));
                         return;
                     }
 
                     if (fieldInfoDictionary.ContainsKey(method) || propertyInfoDictionary.ContainsKey(method))
                     {
-                        Debug.LogError(ConsoleAttribute.duplicatedMethodError.ReplacedBy(method));
+                        Debug.LogError(StringConstantInternal.duplicatedMethodError.ReplacedBy(method));
                         return;
                     }
 
@@ -179,7 +181,7 @@
                         return true;
                     }))
                     {
-                        Debug.LogError(ConsoleAttribute.duplicatedMethodError.ReplacedBy(method));
+                        Debug.LogError(StringConstantInternal.duplicatedMethodError.ReplacedBy(method));
                         return;
                     }
 
@@ -195,6 +197,7 @@
 
             this.input = input;
 
+            command = Command.Unknown;
             name = null;
             arguments = null;
             targetIdList = null;
@@ -205,24 +208,42 @@
             }
             catch (Exception)
             {
-                Debug.Log(ConsoleAttribute.unexpectedInputError);
+                Debug.Log(StringConstantInternal.unexpectedInputError);
                 ClearInputField();
 
                 return;
             }
 
-            if (name != null && fieldInfoDictionary.ContainsKey(name))
-                FieldHandler();
+            switch (command)
+            {
+                case Command.Get:
+                case Command.Set:
+                    if (fieldInfoDictionary.ContainsKey(name))
+                        FieldHandler();
 
-            else if (name != null && propertyInfoDictionary.ContainsKey(name))
-                PropertyHandler();
+                    else if (propertyInfoDictionary.ContainsKey(name))
+                        PropertyHandler();
 
-            else if (name != null && methodInfoDictionary.ContainsKey(name))
-                MethodHandler();
+                    else
+                        Debug.Log(StringConstantInternal.fieldOrPropertyNotFoundError.ReplacedBy(name));
 
-            else if (name != null)
-                Debug.Log(ConsoleAttribute.commandNotFoundError.ReplacedBy(name));
+                    break;
 
+                case Command.Clear:
+                    break;
+
+                case Command.Method:
+                    if (methodInfoDictionary.ContainsKey(name))
+                        MethodHandler();
+
+                    else
+                        Debug.Log(StringConstantInternal.commandNotFoundError.ReplacedBy(name));
+
+                    break;
+
+                default:
+                    break;
+            }
             ClearInputField();
         }
 
@@ -243,7 +264,7 @@
 
                     if (compatibility < 0)
                     {
-                        Debug.Log(ConsoleAttribute.fieldTypeMismatchError.ReplacedBy(name));
+                        Debug.Log(StringConstantInternal.fieldTypeMismatchError.ReplacedBy(name));
                         return;
                     }
 
@@ -251,7 +272,7 @@
                     return;
 
                 default:
-                    Debug.Log(ConsoleAttribute.fieldTypeMismatchError.ReplacedBy(name));
+                    Debug.Log(StringConstantInternal.fieldTypeMismatchError.ReplacedBy(name));
                     return;
             }
         }
@@ -266,7 +287,7 @@
                 case 0:
                     if (!propertyInfo.CanRead)
                     {
-                        Debug.Log(ConsoleAttribute.accessorNotDefinedError.ReplacedBy("get", name));
+                        Debug.Log(StringConstantInternal.accessorNotDefinedError.ReplacedBy("get", name));
                         return;
                     }
 
@@ -276,7 +297,7 @@
                 case 1:
                     if (!propertyInfo.CanWrite)
                     {
-                        Debug.Log(ConsoleAttribute.accessorNotDefinedError.ReplacedBy("set", name));
+                        Debug.Log(StringConstantInternal.accessorNotDefinedError.ReplacedBy("set", name));
                         return;
                     }
 
@@ -285,7 +306,7 @@
 
                     if (compatibility < 0)
                     {
-                        Debug.Log(ConsoleAttribute.propertyTypeMismatchError.ReplacedBy(name));
+                        Debug.Log(StringConstantInternal.propertyTypeMismatchError.ReplacedBy(name));
                         return;
                     }
 
@@ -293,7 +314,7 @@
                     return;
 
                 default:
-                    Debug.Log(ConsoleAttribute.propertyTypeMismatchError.ReplacedBy(name));
+                    Debug.Log(StringConstantInternal.propertyTypeMismatchError.ReplacedBy(name));
                     return;
             }
         }
@@ -345,7 +366,7 @@
 
             if (mostCompatibleMethod == null)
             {
-                Debug.Log(ConsoleAttribute.argumentTypeMismatchError.ReplacedBy(name));
+                Debug.Log(StringConstantInternal.argumentTypeMismatchError.ReplacedBy(name));
                 ClearInputField();
 
                 return;
@@ -357,7 +378,7 @@
             }
             catch (Exception)
             {
-                Debug.Log(ConsoleAttribute.methodRuntimeError.ReplacedBy(name));
+                Debug.Log(StringConstantInternal.methodRuntimeError.ReplacedBy(name));
                 return;
             }
         }
@@ -382,8 +403,29 @@
                     if (!x.IsMatch(RegexConstant.alphabet))
                         throw new NotSupportedException();
 
-                    name = x;
-                    return;
+                    switch (x)
+                    {
+                        case "get":
+                            command = Command.Get;
+                            return;
+
+                        case "set":
+                            command = Command.Set;
+                            return;
+
+                        case "clear":
+                            return;
+
+                        case "save":
+                            return;
+
+                        default:
+                            if (command == Command.Unknown)
+                                command = Command.Method;
+
+                            name = x;
+                            return;
+                    }
                 }
 
                 if (x[0] == '-' && x.Substring(1).IsMatch(RegexConstant.alphabet))
@@ -404,6 +446,9 @@
 
                 optionDictionary[option].Add(Box(x));
             });
+
+            if (name == null)
+                throw new NotSupportedException();
 
             arguments = argumentList.ToArray();
 

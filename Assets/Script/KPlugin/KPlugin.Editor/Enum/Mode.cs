@@ -5,8 +5,8 @@
     [Flags]
     public enum Mode
     {
-        Edit = 1,
-        Play = 2,
+        Edit = 1 << 0,
+        Play = 1 << 1,
         All = Edit | Play,
     }
 }

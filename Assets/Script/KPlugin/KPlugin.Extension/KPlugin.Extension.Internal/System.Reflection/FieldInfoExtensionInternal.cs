@@ -5,6 +5,7 @@
     using System.Reflection;
     using UnityEngine;
     using Debug;
+    using Constant.Internal;
 
     public static class FieldInfoExtensionInternal
     {
@@ -38,14 +39,14 @@
         {
             object value = fieldInfo.GetValue(obj);
 
-            Debug.Log(ConsoleAttribute.fieldGetMessage.ReplacedBy(fieldInfo.Name, value));
+            Debug.Log(StringConstantInternal.fieldGetMessage.ReplacedBy(fieldInfo.Name, value));
         }
 
         private static void AutoGetValueStatic(this FieldInfo fieldInfo)
         {
             object value = fieldInfo.GetValue(null);
 
-            Debug.Log(ConsoleAttribute.fieldGetMessage.ReplacedBy(fieldInfo.Name, value));
+            Debug.Log(StringConstantInternal.fieldGetMessage.ReplacedBy(fieldInfo.Name, value));
         }
 
         public static void AutoSetValue(this FieldInfo fieldInfo, object value)
@@ -76,7 +77,6 @@
 
         private static void AutoSetValueInstance(this FieldInfo fieldInfo, object obj, object value)
         {
-            Debug.Log(value.GetType());
             fieldInfo.SetValue(obj, value);
         }
 
