@@ -36,9 +36,9 @@
         public static readonly string unsupportedArgumentError = "Method '{0}' contains unsupported argument type(s).";
         public static readonly string argumentTypeMismatchError = "Argument type mismatch for invoking method '{0}'.";
         public static readonly string methodRuntimeError = "Unexpected error while running method '{0}'.";
-        public static readonly string methodVoidInstanceMessage = "Method '{0}' executes successfully on '{1}' (ID: {2})";
+        public static readonly string methodVoidInstanceMessage = "Method '{0}' executes successfully on '{1}' (ID: {2}).";
         public static readonly string methodNonVoidInstanceMessage = "Method '{0}' executes successfully on '{1}' (ID: {2}) with return value {3}.";
-        public static readonly string methodVoidStaticMessage = "Method '{0}' executes successfully";
+        public static readonly string methodVoidStaticMessage = "Method '{0}' executes successfully.";
         public static readonly string methodNonVoidStaticMessage = "Method '{0}' executes successfully  with return value {1}.";
     }
 }

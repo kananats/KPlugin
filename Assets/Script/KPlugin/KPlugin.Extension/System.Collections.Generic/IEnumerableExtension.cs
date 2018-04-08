@@ -15,7 +15,7 @@
                 action(cloneList[i]);
         }
 
-        public static void SafeClear<T>(this List<T> list) where T : MonoBehaviour
+        public static void ClearAndDestroy<T>(this List<T> list) where T : MonoBehaviour
         {
             list.SafeForEach(x => UnityEngine.Object.Destroy(x.gameObject));
 

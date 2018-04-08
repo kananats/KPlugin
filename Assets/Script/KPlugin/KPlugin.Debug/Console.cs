@@ -17,5 +17,23 @@
             if (instance.useDefaultLog)
                 message.Log();
         }
+
+        [Console("clear")]
+        public static void Clear()
+        {
+            instance.consoleOutput.Clear();
+        }
+
+        [Console("save")]
+        public static void Save()
+        {
+            instance.consoleOutput.Save();
+        }
+
+        [Console("opacity")]
+        public static void SetOpacity(int opacity)
+        {
+            instance.consoleOutput.SetOpacity(opacity);
+        }
     }
 }

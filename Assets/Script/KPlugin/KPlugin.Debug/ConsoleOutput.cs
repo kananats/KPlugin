@@ -47,19 +47,16 @@
             logTextList.Add(logText);
         }
 
-        [Console("clear")]
         public void Clear()
         {
-            logTextList.SafeClear();
+            logTextList.ClearAndDestroy();
         }
 
-        [Console("save")]
         public void Save()
         {
 
         }
 
-        [Console("opacity")]
         public void SetOpacity(int opacity)
         {
             Color color = blackPanel.color;
