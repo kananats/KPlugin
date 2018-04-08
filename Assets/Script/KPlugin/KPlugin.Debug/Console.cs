@@ -3,7 +3,7 @@
     using UnityEngine;
     using Extension;
 
-    public class Console : SingletonMonoBehaviour<Console>
+    public class Console : SingletonUIMonoBehaviour<Console>
     {
         [SerializeField]
         private ConsoleOutput consoleOutput;
