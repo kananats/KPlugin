@@ -18,9 +18,24 @@
 
         private List<Text> logTextList;
 
+        public bool visible
+        {
+            get
+            {
+                return gameObject.activeInHierarchy;
+            }
+
+            set
+            {
+                gameObject.SetActive(value);
+            }
+        }
+
         void Awake()
         {
             logTextList = new List<Text>();
+
+            visible = false;
         }
 
         [Console("log")]
@@ -43,6 +58,14 @@
         public void Save()
         {
 
+        }
+
+        [Console("opacity")]
+        public void SetOpacity(int opacity)
+        {
+            Color color = blackPanel.color;
+            color.a = Mathf.Clamp01(opacity / 100.0f);
+            blackPanel.color = color;
         }
     }
 }

@@ -18,6 +18,9 @@
         [SerializeField]
         private InputField inputField;
 
+        [SerializeField]
+        private ConsoleOutput consoleOutput;
+
         private bool _focused;
         private bool focused
         {
@@ -79,12 +82,12 @@
 
         private void OnFocus()
         {
-
+            consoleOutput.visible = true;
         }
 
         private void OnLosingFocus()
         {
-
+            consoleOutput.visible = false;
         }
 
         private void InitializeDictionary()
