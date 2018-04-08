@@ -1,5 +1,6 @@
 ﻿namespace KPlugin.Extension.Internal
 {
+    using System;
     using System.Linq;
     using System.Reflection;
     using UnityEngine;
@@ -9,20 +10,20 @@
     {
         public static void AutoGetValue(this FieldInfo fieldInfo)
         {
-            fieldInfo.AutoGetValue(Object.FindObjectsOfType(fieldInfo.ReflectedType), _ => true);
+            fieldInfo.AutoGetValue(UnityEngine.Object.FindObjectsOfType(fieldInfo.ReflectedType), _ => true);
         }
 
-        public static void AutoGetValue(this FieldInfo fieldInfo, Object[] objects)
+        public static void AutoGetValue(this FieldInfo fieldInfo, UnityEngine.Object[] objects)
         {
             fieldInfo.AutoGetValue(objects, _ => true);
         }
 
-        public static void AutoGetValue(this FieldInfo fieldInfo, System.Func<Object, bool> predicate)
+        public static void AutoGetValue(this FieldInfo fieldInfo, Func<UnityEngine.Object, bool> predicate)
         {
-            fieldInfo.AutoGetValue(Object.FindObjectsOfType(fieldInfo.ReflectedType), predicate);
+            fieldInfo.AutoGetValue(UnityEngine.Object.FindObjectsOfType(fieldInfo.ReflectedType), predicate);
         }
 
-        public static void AutoGetValue(this FieldInfo fieldInfo, Object[] objects, System.Func<Object, bool> predicate)
+        public static void AutoGetValue(this FieldInfo fieldInfo, UnityEngine.Object[] objects, Func<UnityEngine.Object, bool> predicate)
         {
             if (fieldInfo.IsStatic)
             {
@@ -49,20 +50,20 @@
 
         public static void AutoSetValue(this FieldInfo fieldInfo, object value)
         {
-            fieldInfo.AutoSetValue(Object.FindObjectsOfType(fieldInfo.ReflectedType), _ => true, value);
+            fieldInfo.AutoSetValue(UnityEngine.Object.FindObjectsOfType(fieldInfo.ReflectedType), _ => true, value);
         }
 
-        public static void AutoSetValue(this FieldInfo fieldInfo, Object[] objects, object value)
+        public static void AutoSetValue(this FieldInfo fieldInfo, UnityEngine.Object[] objects, object value)
         {
             fieldInfo.AutoSetValue(objects, _ => true, value);
         }
 
-        public static void AutoSetValue(this FieldInfo fieldInfo, System.Func<Object, bool> predicate, object value)
+        public static void AutoSetValue(this FieldInfo fieldInfo, Func<UnityEngine.Object, bool> predicate, object value)
         {
-            fieldInfo.AutoSetValue(Object.FindObjectsOfType(fieldInfo.ReflectedType), predicate, value);
+            fieldInfo.AutoSetValue(UnityEngine.Object.FindObjectsOfType(fieldInfo.ReflectedType), predicate, value);
         }
 
-        public static void AutoSetValue(this FieldInfo fieldInfo, Object[] objects, System.Func<Object, bool> predicate, object value)
+        public static void AutoSetValue(this FieldInfo fieldInfo, UnityEngine.Object[] objects, Func<UnityEngine.Object, bool> predicate, object value)
         {
             if (fieldInfo.IsStatic)
             {
@@ -75,6 +76,7 @@
 
         private static void AutoSetValueInstance(this FieldInfo fieldInfo, object obj, object value)
         {
+            Debug.Log(value.GetType());
             fieldInfo.SetValue(obj, value);
         }
 

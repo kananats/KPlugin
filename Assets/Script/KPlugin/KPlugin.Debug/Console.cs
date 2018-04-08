@@ -11,6 +11,7 @@
     using Extension.Internal;
     using Constant;
 
+    [RequireComponent(typeof(InputField))]
     public class Console : MonoBehaviour
     {
         [SerializeField]
@@ -27,13 +28,12 @@
         private new string name;
         private object[] arguments;
         private List<int> targetIdList;
-        private List<string> targetNameList;
 
         private Func<UnityEngine.Object, bool> predicate
         {
             get
             {
-                return y => targetIdList == null && targetNameList == null || targetIdList != null && targetIdList.Any(z => z == y.GetInstanceID()) || targetNameList != null && targetNameList.Any(z => z == y.name);
+                return y => targetIdList == null || targetIdList.Any(z => z == y.GetInstanceID());
             }
         }
 
@@ -198,7 +198,6 @@
             name = null;
             arguments = null;
             targetIdList = null;
-            targetNameList = null;
 
             try
             {
@@ -240,7 +239,7 @@
 
                 case 1:
                     int compatibility;
-                    arguments[0].ChangeTypeWithCompatibility(type, out compatibility);
+                    object boxedArgument = arguments[0].ChangeTypeWithCompatibility(type, out compatibility);
 
                     if (compatibility < 0)
                     {
@@ -248,7 +247,7 @@
                         return;
                     }
 
-                    fieldInfo.AutoSetValue(predicate, arguments[0]);
+                    fieldInfo.AutoSetValue(predicate, boxedArgument);
                     return;
 
                 default:
@@ -282,7 +281,7 @@
                     }
 
                     int compatibility;
-                    arguments[0].ChangeTypeWithCompatibility(type, out compatibility);
+                    object boxedArgument = arguments[0].ChangeTypeWithCompatibility(type, out compatibility);
 
                     if (compatibility < 0)
                     {
@@ -290,7 +289,7 @@
                         return;
                     }
 
-                    propertyInfo.AutoSetValue(predicate, arguments[0]);
+                    propertyInfo.AutoSetValue(predicate, boxedArgument);
                     return;
 
                 default:
@@ -409,7 +408,6 @@
             arguments = argumentList.ToArray();
 
             targetIdList = optionDictionary.ContainsKey("id") ? optionDictionary["id"].Select(x => (int)x).ToList() : null;
-            targetNameList = optionDictionary.ContainsKey("name") ? optionDictionary["name"].Select(x => (string)x).ToList() : null;
         }
 
         private static object Box(string s)
