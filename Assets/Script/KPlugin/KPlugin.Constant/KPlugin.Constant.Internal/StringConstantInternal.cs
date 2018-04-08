@@ -7,13 +7,17 @@
         public static readonly string commandNotFoundError = "String '{0}' is not recognized as a command.";
         public static readonly string fieldOrPropertyNotFoundError = "String '{0}' is not recognized as a field or property.";
         public static readonly string objectNotFoundWarning = "There is no object that matches a criterion.";
+        public static readonly string writeSuccessfully = "Data was successfully written to '{0}'";
+        public static readonly string writeUnsuccessfully = "Unexpected error while writing to '{0}'";
+        public static readonly string readSuccessfully = "Data was successfully retrieved from '{0}'";
+        public static readonly string readUnsuccessfully = "Unexpected error while retrieving data from '{0}'";
 
         // Field
         public static readonly string unsupportedFieldNameError = "Field '{0}' contains unsupported character(s).";
         public static readonly string duplicatedFieldError = "Field '{0}' is already defined.";
         public static readonly string unsupportedFieldTypeError = "Field '{0}' is unsupported type.";
         public static readonly string fieldTypeMismatchError = "Type mismatch for set field '{0}'.";
-        
+
         public static readonly string fieldGetValueInstanceMessage = "Field '{0}' of '{1}' (ID: {2}) is {3}.";
         public static readonly string fieldGetValueStaticMessage = "Field '{0}' is {1}.";
         public static readonly string fieldSetValueInstanceMessage = "Field '{0}' of '{1}' (ID: {2}) is set to {3}.";

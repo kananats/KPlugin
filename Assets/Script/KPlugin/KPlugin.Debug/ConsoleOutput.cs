@@ -1,5 +1,6 @@
 ﻿namespace KPlugin.Debug
 {
+    using System.Linq;
     using System.Collections.Generic;
     using UnityEngine;
     using UnityEngine.UI;
@@ -54,7 +55,9 @@
 
         public void Save()
         {
-
+            string data = "";
+            logTextList.ForEach(x => data = data + x.text + "\n");
+            FileManager.Write(System.DateTime.Now.ToString("yyyyMMddHHmmss") + ".log", data);
         }
 
         public void SetOpacity(int opacity)
