@@ -1,6 +1,6 @@
 ﻿namespace KPlugin.Debug
 {
-    using System.Linq;
+    using System.Collections;
     using System.Collections.Generic;
     using UnityEngine;
     using UnityEngine.UI;
@@ -9,39 +9,29 @@
     public class ConsoleOutput : MonoBehaviour
     {
         [SerializeField]
-        private Image blackPanel;
+        private ConsoleInput consoleInput;
+
+        [SerializeField]
+        private Image fadeImage;
 
         [SerializeField]
         private RectTransform content;
 
-        [SerializeField]
-        private Text logPrefab;
-
         private List<Text> logTextList;
 
-        public bool visible
-        {
-            get
-            {
-                return gameObject.activeInHierarchy;
-            }
+        private Coroutine _CR_Hide;
 
-            set
-            {
-                gameObject.SetActive(value);
-            }
-        }
-
-        void Awake()
+        void Start()
         {
             logTextList = new List<Text>();
+            HideBlackPanel();
 
-            visible = false;
+            _CR_Hide = null;
         }
 
         public void Log(string message)
         {
-            Text logText = Instantiate(logPrefab);
+            Text logText = Instantiate(Resources.Load<Text>("Prefab/Log"));
             logText.text = message;
             logText.transform.SetParent(content);
 
@@ -62,9 +52,45 @@
 
         public void SetOpacity(int opacity)
         {
-            Color color = blackPanel.color;
+            Color color = fadeImage.color;
             color.a = Mathf.Clamp01(opacity / 100.0f);
-            blackPanel.color = color;
+            fadeImage.color = color;
+        }
+
+        private IEnumerator CR_Hide()
+        {
+            ShowLog();
+            yield return new WaitForSeconds(3.0f);
+
+            HideLog();
+        }
+
+        public void ShowBlackPanel()
+        {
+            fadeImage.enabled = true;
+        }
+
+        public void HideBlackPanel()
+        {
+            fadeImage.enabled = false;
+        }
+
+        public void ShowLog()
+        {
+            content.gameObject.SetActive(true);
+        }
+
+        public void ShowLogThenHide()
+        {
+            if (_CR_Hide != null)
+                StopCoroutine(_CR_Hide);
+
+            _CR_Hide = StartCoroutine(CR_Hide());
+        }
+
+        public void HideLog()
+        {
+            content.gameObject.SetActive(false);
         }
     }
 }

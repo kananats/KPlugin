@@ -97,7 +97,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!1 &1717114072737122
 GameObject:
   m_ObjectHideFlags: 1
@@ -116,7 +116,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!1 &1740734843259886
 GameObject:
   m_ObjectHideFlags: 1
@@ -196,6 +196,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   inputField: {fileID: 114404707172550872}
+  console: {fileID: 114592714898581870}
   consoleOutput: {fileID: 114771837792952184}
 --- !u!114 &114404707172550872
 MonoBehaviour:
@@ -331,8 +332,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c157abc2be7df7b40a383782dc2c49e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  consoleInput: {fileID: 114287811448446396}
   consoleOutput: {fileID: 114771837792952184}
   useDefaultLog: 0
+  _mode: 0
 --- !u!114 &114708240439838636
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -365,10 +368,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f31ec142b3fffe74b8702a183b445521, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  blackPanel: {fileID: 114572804474570056}
+  consoleInput: {fileID: 114287811448446396}
+  fadeImage: {fileID: 114572804474570056}
   content: {fileID: 224676125199544314}
-  logPrefab: {fileID: 114240969306045994, guid: b3f7cdbea9ab092458b0ba0e3869e133,
-    type: 2}
 --- !u!114 &114856309727999884
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -585,7 +587,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 4}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!224 &224686358605218934
 RectTransform:

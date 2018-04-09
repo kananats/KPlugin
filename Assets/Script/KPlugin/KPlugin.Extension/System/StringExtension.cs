@@ -1,13 +1,12 @@
 ﻿namespace KPlugin.Extension
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Text;
     using System.Text.RegularExpressions;
     using UnityEngine;
     using Internal;
-    using Constant;
-    using Constant.Internal;
 
     public static class StringExtension
     {
@@ -113,6 +112,11 @@
         public static string ReplacedBy(this string s, params object[] args)
         {
             return string.Format(s, args);
+        }
+
+        public static bool EqualsIgnoreCase(this string s, string t)
+        {
+            return string.Equals(s, t, StringComparison.OrdinalIgnoreCase);
         }
     }
 }

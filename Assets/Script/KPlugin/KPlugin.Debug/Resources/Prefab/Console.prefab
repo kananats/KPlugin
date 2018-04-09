@@ -46,7 +46,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!1 &1281041797122458
 GameObject:
   m_ObjectHideFlags: 1
@@ -98,7 +98,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!1 &1910532780403084
 GameObject:
   m_ObjectHideFlags: 1
@@ -200,10 +200,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f31ec142b3fffe74b8702a183b445521, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  blackPanel: {fileID: 114760126737192150}
+  consoleInput: {fileID: 114334117874193238}
+  fadeImage: {fileID: 114760126737192150}
   content: {fileID: 224069482269877622}
-  logPrefab: {fileID: 114240969306045994, guid: b3f7cdbea9ab092458b0ba0e3869e133,
-    type: 2}
 --- !u!114 &114150005151553772
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -287,6 +286,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   inputField: {fileID: 114361771109991940}
+  console: {fileID: 114950479754991718}
   consoleOutput: {fileID: 114137853993679698}
 --- !u!114 &114361771109991940
 MonoBehaviour:
@@ -411,8 +411,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c157abc2be7df7b40a383782dc2c49e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  consoleInput: {fileID: 114334117874193238}
   consoleOutput: {fileID: 114137853993679698}
   useDefaultLog: 0
+  _mode: 0
 --- !u!222 &222198780019903772
 CanvasRenderer:
   m_ObjectHideFlags: 1
@@ -453,7 +455,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 4}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!224 &224510637847492154
 RectTransform:

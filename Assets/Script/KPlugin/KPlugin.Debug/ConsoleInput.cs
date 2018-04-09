@@ -19,6 +19,9 @@
         private InputField inputField;
 
         [SerializeField]
+        private Console console;
+
+        [SerializeField]
         private ConsoleOutput consoleOutput;
 
         private Dictionary<string, FieldInfo> fieldInfoDictionary;
@@ -38,14 +41,14 @@
         private List<int> targetIdList;
 
         private bool _focused;
-        private bool focused
+        public bool focused
         {
             get
             {
                 return _focused;
             }
 
-            set
+            private set
             {
                 if (!_focused && value)
                 {
@@ -116,12 +119,18 @@
 
         private void OnFocus()
         {
-            consoleOutput.visible = true;
+            consoleOutput.ShowBlackPanel();
+
+            if (console.mode == Mode.Hide || console.mode == Mode.Auto)
+                consoleOutput.ShowLog();
         }
 
         private void OnLosingFocus()
         {
-            consoleOutput.visible = false;
+            consoleOutput.HideBlackPanel();
+
+            if (console.mode == Mode.Hide || console.mode == Mode.Auto)
+                consoleOutput.HideLog();
         }
 
         private void InitializeDictionary()
