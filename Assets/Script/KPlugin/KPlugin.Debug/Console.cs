@@ -32,6 +32,11 @@
             consoleOutput.gameObject.SetActive(true);
         }
 
+        public static void Log(object obj)
+        {
+            Log(obj.ToSimpleString());
+        }
+
         [Console("log")]
         public static void Log(string message)
         {
