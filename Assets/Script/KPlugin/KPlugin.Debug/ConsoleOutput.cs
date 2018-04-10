@@ -24,22 +24,27 @@
 
         private Coroutine _CR_Hide;
 
+        private int fontSize;
+
         void Start()
         {
             logTextList = new List<Text>();
             HideBlackPanel();
 
             _CR_Hide = null;
+
+            fontSize = Resources.Load<Text>("Prefab/Log").fontSize;
         }
 
         void Update()
         {
-            scrollRect.verticalNormalizedPosition += Input.mouseScrollDelta.y / 20f;
+            scrollRect.verticalNormalizedPosition += Input.mouseScrollDelta.y / 20.0f;
         }
 
         public void Log(string message)
         {
             Text logText = Instantiate(Resources.Load<Text>("Prefab/Log"));
+            logText.fontSize = fontSize;
             logText.text = message;
             logText.transform.SetParent(content);
 
@@ -49,6 +54,13 @@
         public void Clear()
         {
             logTextList.ClearAndDestroy();
+        }
+
+        public void SetFontSize(int fontSize)
+        {
+            this.fontSize = fontSize;
+
+            logTextList.ForEach(x => x.fontSize = fontSize);
         }
 
         public void Save()

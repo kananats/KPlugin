@@ -94,5 +94,11 @@
             else
                 throw new NotSupportedException();
         }
+
+        [Console("size")]
+        public static void SetFontSize(int size)
+        {
+            instance.consoleOutput.SetFontSize(size);
+        }
     }
 }
