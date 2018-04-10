@@ -283,8 +283,13 @@
                 return;
 
             this.input = input;
-
             consoleOutput.Log(("User > " + input).Color(Color.green));
+
+            if (input.Trim() == "")
+            {
+                ClearInputField();
+                return;
+            }
 
             inputHistory.Add(input);
             inputHistoryIndex = inputHistory.Count;
