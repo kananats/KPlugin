@@ -12,6 +12,9 @@
         private ConsoleInput consoleInput;
 
         [SerializeField]
+        private ScrollRect scrollRect;
+
+        [SerializeField]
         private Image fadeImage;
 
         [SerializeField]
@@ -27,6 +30,11 @@
             HideBlackPanel();
 
             _CR_Hide = null;
+        }
+
+        void Update()
+        {
+            scrollRect.verticalNormalizedPosition += Input.mouseScrollDelta.y / 20f;
         }
 
         public void Log(string message)

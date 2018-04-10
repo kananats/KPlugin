@@ -369,6 +369,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   consoleInput: {fileID: 114287811448446396}
+  scrollRect: {fileID: 114952935376086604}
   fadeImage: {fileID: 114572804474570056}
   content: {fileID: 224676125199544314}
 --- !u!114 &114856309727999884
