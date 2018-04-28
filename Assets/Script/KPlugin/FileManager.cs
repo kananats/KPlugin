@@ -24,11 +24,11 @@ namespace KPlugin
 
                 content = Serializer.Deserialize<T>(serializedContent);
 
-                Debug.Console.Log(StringConstantInternal.readSuccessfully.ReplacedBy(path));
+                StringConstantInternal.readSuccess.ReplacedBy(path).LogConsole();
             }
             catch (Exception)
             {
-                Debug.Console.Log(StringConstantInternal.readUnsuccessfully.ReplacedBy(path));
+                StringConstantInternal.readError.ReplacedBy(path).Color(Color.red).LogConsole();
             }
 
             return content;
@@ -45,11 +45,11 @@ namespace KPlugin
 
                 File.WriteAllText(path, encryptedContent);
 
-                Debug.Console.Log(StringConstantInternal.writeSuccessfully.ReplacedBy(path));
+                StringConstantInternal.writeSuccess.ReplacedBy(path).LogConsole();
             }
             catch (Exception)
             {
-                Debug.Console.Log(StringConstantInternal.writeUnsuccessfully.ReplacedBy(path));
+                StringConstantInternal.writeError.ReplacedBy(path).Color(Color.red).LogConsole();
             }
         }
     }

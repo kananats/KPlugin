@@ -73,7 +73,7 @@ namespace KPlugin.Debug.Internal
             }
         }
 
-        void Awake()
+        public void Initialize()
         {
             _focused = false;
             inputHistory = new List<string>();
@@ -151,7 +151,7 @@ namespace KPlugin.Debug.Internal
         {
             typeList.ForEach(x =>
             {
-                x.GetFields(BindingFlagsConstantInternal.bindingFlags).ToList().ForEach(y =>
+                x.GetFields(BindingFlagsConstantInternal.allBindingFlags).ToList().ForEach(y =>
                 {
                     ConsoleAttribute attribute = y.GetCustomAttribute<ConsoleAttribute>();
                     if (attribute == null)
@@ -160,20 +160,20 @@ namespace KPlugin.Debug.Internal
                     string field = attribute.name;
                     if (field == null || !field.IsMatch(RegexConstant.alphanumericOrUnderscore))
                     {
-                        Console.Log(StringConstantInternal.unsupportedFieldNameError.ReplacedBy(field).Color(Color.red));
+                        StringConstantInternal.unsupportedFieldNameError.ReplacedBy(field).Color(Color.red).LogConsole();
                         return;
                     }
 
                     if (fieldInfoDictionary.ContainsKey(field) || propertyInfoDictionary.ContainsKey(field) || methodInfoDictionary.ContainsKey(field))
                     {
-                        Console.Log(StringConstantInternal.duplicatedFieldError.ReplacedBy(field).Color(Color.red));
+                        StringConstantInternal.duplicatedFieldError.ReplacedBy(field).Color(Color.red).LogConsole();
                         return;
                     }
 
                     Type type = y.FieldType;
                     if (!type.IsPrimitive && type != typeof(string) && !type.IsEnum)
                     {
-                        Console.Log(StringConstantInternal.unsupportedFieldTypeError.ReplacedBy(field).Color(Color.red));
+                        StringConstantInternal.unsupportedFieldTypeError.ReplacedBy(field).Color(Color.red).LogConsole();
                         return;
                     }
 
@@ -186,7 +186,7 @@ namespace KPlugin.Debug.Internal
         {
             typeList.ForEach(x =>
             {
-                x.GetProperties(BindingFlagsConstantInternal.bindingFlags).ToList().ForEach(y =>
+                x.GetProperties(BindingFlagsConstantInternal.allBindingFlags).ToList().ForEach(y =>
                 {
                     ConsoleAttribute attribute = y.GetCustomAttribute<ConsoleAttribute>();
                     if (attribute == null)
@@ -195,20 +195,20 @@ namespace KPlugin.Debug.Internal
                     string property = attribute.name;
                     if (property == null || !property.IsMatch(RegexConstant.alphanumericOrUnderscore))
                     {
-                        Console.Log(StringConstantInternal.unsupportedPropertyNameError.ReplacedBy(property).Color(Color.red));
+                        StringConstantInternal.propertyUnsupportedNameError.ReplacedBy(property).Color(Color.red).LogConsole();
                         return;
                     }
 
                     if (fieldInfoDictionary.ContainsKey(property) || propertyInfoDictionary.ContainsKey(property) || methodInfoDictionary.ContainsKey(property))
                     {
-                        Console.Log(StringConstantInternal.duplicatedPropertyError.ReplacedBy(property).Color(Color.red));
+                        StringConstantInternal.propertyDuplicatedError.ReplacedBy(property).Color(Color.red).LogConsole();
                         return;
                     }
 
                     Type type = y.PropertyType;
                     if (!type.IsPrimitive && type != typeof(string) && !type.IsEnum)
                     {
-                        Console.Log(StringConstantInternal.unsupportedPropertyTypeError.ReplacedBy(property).Color(Color.red));
+                        StringConstantInternal.propertyUnsupportedTypeError.ReplacedBy(property).Color(Color.red).LogConsole();
                         return;
                     }
 
@@ -221,7 +221,7 @@ namespace KPlugin.Debug.Internal
         {
             typeList.ForEach(x =>
             {
-                x.GetMethods(BindingFlagsConstantInternal.bindingFlags).Where(y => !y.IsAbstract && !y.IsGenericMethod && !y.IsDefined<ExtensionAttribute>()).ToList().ForEach(y =>
+                x.GetMethods(BindingFlagsConstantInternal.allBindingFlags).Where(y => !y.IsAbstract && !y.IsGenericMethod && !y.IsDefined<ExtensionAttribute>()).ToList().ForEach(y =>
                 {
                     ConsoleAttribute attribute = y.GetCustomAttribute<ConsoleAttribute>();
                     if (attribute == null)
@@ -230,7 +230,7 @@ namespace KPlugin.Debug.Internal
                     string method = attribute.name;
                     if (method == null || !method.IsMatch(RegexConstant.alphanumericOrUnderscore))
                     {
-                        Console.Log(StringConstantInternal.unsupportedMethodNameError.ReplacedBy(method).Color(Color.red));
+                        StringConstantInternal.methodUnsupportedNameError.ReplacedBy(method).Color(Color.red).LogConsole();
                         return;
                     }
 
@@ -241,13 +241,13 @@ namespace KPlugin.Debug.Internal
                         return z.IsOut || type.IsByRef || !type.IsPrimitive && type != typeof(string) && !type.IsEnum;
                     }))
                     {
-                        Console.Log(StringConstantInternal.unsupportedArgumentError.ReplacedBy(method).Color(Color.red));
+                        StringConstantInternal.methodUnsupportedArgumentError.ReplacedBy(method).Color(Color.red).LogConsole();
                         return;
                     }
 
                     if (fieldInfoDictionary.ContainsKey(method) || propertyInfoDictionary.ContainsKey(method))
                     {
-                        Console.Log(StringConstantInternal.duplicatedMethodError.ReplacedBy(method).Color(Color.red));
+                        StringConstantInternal.methodDuplicatedError.ReplacedBy(method).Color(Color.red).LogConsole();
                         return;
                     }
 
@@ -269,7 +269,7 @@ namespace KPlugin.Debug.Internal
                         return true;
                     }))
                     {
-                        Console.Log(StringConstantInternal.duplicatedMethodError.ReplacedBy(method).Color(Color.red));
+                        StringConstantInternal.methodDuplicatedError.ReplacedBy(method).Color(Color.red).LogConsole();
                         return;
                     }
 
@@ -306,7 +306,7 @@ namespace KPlugin.Debug.Internal
             }
             catch (Exception)
             {
-                Console.Log(StringConstantInternal.unexpectedInputError);
+                StringConstantInternal.unexpectedInputError.LogConsole();
                 ClearInputField();
 
                 return;
@@ -323,7 +323,7 @@ namespace KPlugin.Debug.Internal
                         PropertyHandler();
 
                     else
-                        Console.Log(StringConstantInternal.fieldOrPropertyNotFoundError.ReplacedBy(name));
+                        StringConstantInternal.fieldOrPropertyNotFoundError.ReplacedBy(name).LogConsole();
 
                     break;
 
@@ -332,7 +332,7 @@ namespace KPlugin.Debug.Internal
                         MethodHandler();
 
                     else
-                        Console.Log(StringConstantInternal.commandNotFoundError.ReplacedBy(name));
+                        StringConstantInternal.commandNotFoundError.ReplacedBy(name).Color(Color.red).LogConsole();
 
                     break;
 
@@ -347,27 +347,37 @@ namespace KPlugin.Debug.Internal
             FieldInfo fieldInfo = fieldInfoDictionary[name];
             Type type = fieldInfo.FieldType;
 
-            switch (arguments.Length)
+            switch (command)
             {
-                case 0:
-                    fieldInfo.AutoGetValue(predicate);
+                case Command.Get:
+                    if (arguments.Length != 0)
+                    {
+                        StringConstantInternal.fieldUnexpectedArgumentsError.ReplacedBy("get", name).Color(Color.red).LogConsole();
+                        return;
+                    }
+                    fieldInfo.AutoGetValue(predicate).LogConsole();
                     return;
 
-                case 1:
+                case Command.Set:
+                    if (arguments.Length != 1)
+                    {
+                        StringConstantInternal.fieldUnexpectedArgumentsError.ReplacedBy("set", name).Color(Color.red).LogConsole();
+                        return;
+                    }
+
                     int compatibility;
                     object boxedArgument = arguments[0].ChangeTypeWithCompatibility(type, out compatibility);
 
                     if (compatibility < 0)
                     {
-                        Console.Log(StringConstantInternal.fieldTypeMismatchError.ReplacedBy(name).Color(Color.red));
+                        StringConstantInternal.fieldTypeMismatchError.ReplacedBy(name).Color(Color.red).LogConsole();
                         return;
                     }
 
-                    fieldInfo.AutoSetValue(predicate, boxedArgument);
+                    fieldInfo.AutoSetValue(predicate, boxedArgument).LogConsole();
                     return;
 
                 default:
-                    Console.Log(StringConstantInternal.fieldTypeMismatchError.ReplacedBy(name).Color(Color.red));
                     return;
             }
         }
@@ -377,22 +387,31 @@ namespace KPlugin.Debug.Internal
             PropertyInfo propertyInfo = propertyInfoDictionary[name];
             Type type = propertyInfo.PropertyType;
 
-            switch (arguments.Length)
+            switch (command)
             {
-                case 0:
+                case Command.Get:
                     if (!propertyInfo.CanRead)
                     {
-                        Console.Log(StringConstantInternal.accessorNotDefinedError.ReplacedBy("get", name).Color(Color.red));
+                        StringConstantInternal.propertyUndefinedAccessorError.ReplacedBy("get", name).Color(Color.red).LogConsole();
                         return;
                     }
-
-                    propertyInfo.AutoGetValue(predicate);
+                    if (arguments.Length != 0)
+                    {
+                        StringConstantInternal.propertyUnexpectedArgumentsError.ReplacedBy("get", name).Color(Color.red).LogConsole();
+                        return;
+                    }
+                    propertyInfo.AutoGetValue(predicate).LogConsole();
                     return;
 
-                case 1:
+                case Command.Set:
                     if (!propertyInfo.CanWrite)
                     {
-                        Console.Log(StringConstantInternal.accessorNotDefinedError.ReplacedBy("set", name).Color(Color.red));
+                        StringConstantInternal.propertyUndefinedAccessorError.ReplacedBy("set", name).Color(Color.red).LogConsole();
+                        return;
+                    }
+                    if (arguments.Length != 1)
+                    {
+                        StringConstantInternal.propertyUnexpectedArgumentsError.ReplacedBy("set", name).Color(Color.red).LogConsole();
                         return;
                     }
 
@@ -401,15 +420,14 @@ namespace KPlugin.Debug.Internal
 
                     if (compatibility < 0)
                     {
-                        Console.Log(StringConstantInternal.propertyTypeMismatchError.ReplacedBy(name).Color(Color.red));
+                        StringConstantInternal.propertyTypeMismatchError.ReplacedBy(name).Color(Color.red).LogConsole();
                         return;
                     }
 
-                    propertyInfo.AutoSetValue(predicate, boxedArgument);
+                    propertyInfo.AutoSetValue(predicate, boxedArgument).LogConsole();
                     return;
 
                 default:
-                    Console.Log(StringConstantInternal.propertyTypeMismatchError.ReplacedBy(name).Color(Color.red));
                     return;
             }
         }
@@ -461,21 +479,11 @@ namespace KPlugin.Debug.Internal
 
             if (mostCompatibleMethod == null)
             {
-                Console.Log(StringConstantInternal.argumentTypeMismatchError.ReplacedBy(name).Color(Color.red));
-                ClearInputField();
-
+                StringConstantInternal.methodMismatchArgumentTypeError.ReplacedBy(name).Color(Color.red).LogConsole();
                 return;
             }
 
-            try
-            {
-                mostCompatibleMethod.AutoInvoke(predicate, mostCompatibleBoxedArguments);
-            }
-            catch (Exception)
-            {
-                Console.Log(StringConstantInternal.methodRuntimeError.ReplacedBy(name).Color(Color.red));
-                return;
-            }
+            mostCompatibleMethod.AutoInvoke(predicate, mostCompatibleBoxedArguments).LogConsole();
         }
 
         private void ClearInputField()

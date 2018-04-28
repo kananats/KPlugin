@@ -27,7 +27,7 @@ namespace KPlugin.Debug.Internal
 
         private int fontSize;
 
-        void Start()
+        public void Initialize()
         {
             logTextList = new List<Text>();
             HideBlackPanel();
@@ -98,6 +98,9 @@ namespace KPlugin.Debug.Internal
 
         public void ShowLog()
         {
+            if (_CR_Hide != null)
+                StopCoroutine(_CR_Hide);
+
             content.gameObject.SetActive(true);
         }
 

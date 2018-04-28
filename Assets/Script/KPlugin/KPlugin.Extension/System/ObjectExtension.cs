@@ -2,12 +2,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 
 namespace KPlugin.Extension
 {
     using Internal;
     using Debug;
+    using Constant.Internal;
 
     public static class ObjectExtension
     {
@@ -15,29 +15,29 @@ namespace KPlugin.Extension
         {
             Dictionary<string, object> dictionary = new Dictionary<string, object>();
 
-            obj.GetType().GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).ToList().ForEach(x => dictionary[x.Name] = x.GetValue(obj));
+            obj.GetType().GetFields(BindingFlagsConstantInternal.instanceBindingFlags).ToList().ForEach(x => dictionary[x.Name] = x.GetValue(obj));
 
             return dictionary;
         }
 
         public static void Log(this object obj, bool useSimpleString = true)
         {
-            obj.Log("'{0}'", useSimpleString);
+            obj.Log("{0}", useSimpleString);
         }
 
         public static void Log(this object obj, string format, bool useSimpleString = true)
         {
-            UnityEngine.Debug.Log(format.ReplacedBy(useSimpleString ? obj.ToSimpleString() : obj.ToString()));
+            UnityEngine.Debug.Log(format.ReplacedBy(useSimpleString ? obj.ToSimpleString() : obj.ToString()).DoubleQuote(false));
         }
 
         public static void LogConsole(this object obj, bool useSimpleString = true)
         {
-            obj.LogConsole("'{0}'", useSimpleString);
+            obj.LogConsole("{0}", useSimpleString);
         }
 
         public static void LogConsole(this object obj, string format, bool useSimpleString = true)
         {
-            Console.Log(format.ReplacedBy(useSimpleString ? obj.ToSimpleString() : obj.ToString()));
+            Console.Log(format.ReplacedBy(useSimpleString ? obj.ToSimpleString() : obj.ToString()).DoubleQuote(false).Trim());
         }
 
         public static string ToSimpleString(this object obj, bool showType = false)
@@ -85,7 +85,7 @@ namespace KPlugin.Extension
                 return s.Length >= 2 ? s.Substring(0, s.Length - 2) + "]" : "{ }";
             }
 
-            // Class that override ToString()
+            // Class that overrides ToString()
             if (type.GetMethods().Any(x => x.Name == "ToString" && !x.IsStatic && x.DeclaringType == type))
                 return (showType ? "({0})".ReplacedBy(type.Name) : "") + " " + obj.ToString();
 

@@ -1,31 +1,31 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using UnityEngine;
 
 namespace KPlugin.Extension.Internal
 {
-    using Debug;
     using Constant.Internal;
 
     public static class MethodBaseExtensionInternal
     {
-        public static void AutoInvoke(this MethodBase methodBase, object[] parameters)
+        public static string AutoInvoke(this MethodBase methodBase, object[] parameters)
         {
-            methodBase.AutoInvoke(UnityEngine.Object.FindObjectsOfType(methodBase.ReflectedType), _ => true, parameters);
+            return methodBase.AutoInvoke(UnityEngine.Object.FindObjectsOfType(methodBase.ReflectedType), _ => true, parameters);
         }
 
-        public static void AutoInvoke(this MethodBase methodBase, UnityEngine.Object[] objects, object[] parameters)
+        public static string AutoInvoke(this MethodBase methodBase, UnityEngine.Object[] objects, object[] parameters)
         {
-            methodBase.AutoInvoke(objects, _ => true, parameters);
+            return methodBase.AutoInvoke(objects, _ => true, parameters);
         }
 
-        public static void AutoInvoke(this MethodBase methodBase, Func<UnityEngine.Object, bool> predicate, object[] parameters)
+        public static string AutoInvoke(this MethodBase methodBase, Func<UnityEngine.Object, bool> predicate, object[] parameters)
         {
-            methodBase.AutoInvoke(UnityEngine.Object.FindObjectsOfType(methodBase.ReflectedType), predicate, parameters);
+            return methodBase.AutoInvoke(UnityEngine.Object.FindObjectsOfType(methodBase.ReflectedType), predicate, parameters);
         }
 
-        public static void AutoInvoke(this MethodBase methodBase, UnityEngine.Object[] objects, Func<UnityEngine.Object, bool> predicate, object[] parameters)
+        public static string AutoInvoke(this MethodBase methodBase, UnityEngine.Object[] objects, Func<UnityEngine.Object, bool> predicate, object[] parameters)
         {
             ParameterInfo[] parameterInfos = methodBase.GetParameters();
 
@@ -38,40 +38,55 @@ namespace KPlugin.Extension.Internal
                 fixedParameters[i] = i < parametersLength ? parameters[i] : parameterInfos[i].DefaultValue;
 
             if (methodBase.IsStatic)
-            {
-                methodBase.AutoInvokeStatic(fixedParameters);
-                return;
-            }
+                return methodBase.AutoInvokeStatic(fixedParameters);
 
-            if (objects.Count(predicate) == 0)
-            {
-                Console.Log(StringConstantInternal.objectNotFoundWarning.Color(Color.yellow));
-                return;
-            }
+            List<UnityEngine.Object> objectList = objects.Where(predicate).ToList();
 
-            objects.Where(predicate).ToList().ForEach(x => methodBase.AutoInvokeInstance(x, fixedParameters));
+            if (objectList.Count == 0)
+                return StringConstantInternal.objectNotFoundWarning.Color(Color.yellow);
+
+            string s = "";
+            objectList.ForEach(x => s = s + methodBase.AutoInvokeInstance(x, fixedParameters) + "\n");
+
+            return s.Substring(0, s.Length - 1);
         }
 
-        private static void AutoInvokeInstance(this MethodBase methodBase, UnityEngine.Object obj, object[] fixedParameters)
+        private static string AutoInvokeInstance(this MethodBase methodBase, UnityEngine.Object obj, object[] fixedParameters)
         {
-            object value = methodBase.Invoke(obj, fixedParameters);
+            object value;
+            try
+            {
+                value = methodBase.Invoke(obj, fixedParameters);
+            }
+            catch (Exception)
+            {
+                return StringConstantInternal.methodInstanceError.ReplacedBy(methodBase.Name, obj.name, obj.GetInstanceID()).Color(Color.red);
+            }
 
             if (value == null)
-                Console.Log(StringConstantInternal.methodVoidInstanceMessage.ReplacedBy(methodBase.Name, obj.name, obj.GetInstanceID()));
+                return StringConstantInternal.methodVoidInstanceSuccess.ReplacedBy(methodBase.Name, obj.name, obj.GetInstanceID());
 
             else
-                Console.Log(StringConstantInternal.methodNonVoidInstanceMessage.ReplacedBy(methodBase.Name, obj.name, obj.GetInstanceID(), value.ToSimpleString()));
+                return StringConstantInternal.methodNonVoidInstanceSuccess.ReplacedBy(methodBase.Name, obj.name, obj.GetInstanceID(), value.ToSimpleString());
         }
 
-        private static void AutoInvokeStatic(this MethodBase methodBase, object[] fixedParameters)
+        private static string AutoInvokeStatic(this MethodBase methodBase, object[] fixedParameters)
         {
-            object value = methodBase.Invoke(null, fixedParameters);
+            object value;
+            try
+            {
+                value = methodBase.Invoke(null, fixedParameters);
+            }
+            catch (Exception)
+            {
+                return StringConstantInternal.methodStaticError.ReplacedBy(methodBase.Name).Color(Color.red);
+            }
 
             if (value == null)
-                Console.Log(StringConstantInternal.methodVoidStaticMessage.ReplacedBy(methodBase.Name));
+                return StringConstantInternal.methodVoidStaticSuccess.ReplacedBy(methodBase.Name);
 
             else
-                Console.Log(StringConstantInternal.methodNonVoidStaticMessage.ReplacedBy(methodBase.Name, value.ToSimpleString()));
+                return StringConstantInternal.methodNonVoidStaticSuccess.ReplacedBy(methodBase.Name, value.ToSimpleString());
         }
     }
 }

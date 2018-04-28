@@ -28,10 +28,13 @@ namespace KPlugin.Debug
             }
         }
 
-        void Start()
+        void Awake()
         {
-            consoleInput.gameObject.SetActive(true);
             consoleOutput.gameObject.SetActive(true);
+            consoleInput.gameObject.SetActive(true);
+
+            consoleOutput.Initialize();
+            consoleInput.Initialize();
         }
 
         public static void Log(object obj)
@@ -93,7 +96,7 @@ namespace KPlugin.Debug
             if (mode.EqualsIgnoreCase("a") || mode.EqualsIgnoreCase("auto") || mode.EqualsIgnoreCase("d") || mode.EqualsIgnoreCase("default"))
                 instance._mode = Mode.Auto;
 
-            else if (mode.EqualsIgnoreCase("s") || mode.EqualsIgnoreCase("show"))
+            else if (mode.EqualsIgnoreCase("s") || mode.EqualsIgnoreCase("show") || mode.EqualsIgnoreCase("p") || mode.EqualsIgnoreCase("permanent"))
                 instance._mode = Mode.Show;
 
             else if (mode.EqualsIgnoreCase("h") || mode.EqualsIgnoreCase("hide"))

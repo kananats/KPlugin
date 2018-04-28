@@ -1,104 +1,133 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using UnityEngine;
 
 namespace KPlugin.Extension.Internal
 {
-    using Debug;
     using Constant.Internal;
 
     public static class PropertyInfoExtensionInternal
     {
-        public static void AutoGetValue(this PropertyInfo propertyInfo)
+        public static string AutoGetValue(this PropertyInfo propertyInfo)
         {
-            propertyInfo.AutoGetValue(Object.FindObjectsOfType(propertyInfo.ReflectedType), _ => true);
+            return propertyInfo.AutoGetValue(UnityEngine.Object.FindObjectsOfType(propertyInfo.ReflectedType), _ => true);
         }
 
-        public static void AutoGetValue(this PropertyInfo propertyInfo, Object[] objects)
+        public static string AutoGetValue(this PropertyInfo propertyInfo, UnityEngine.Object[] objects)
         {
-            propertyInfo.AutoGetValue(objects, _ => true);
+            return propertyInfo.AutoGetValue(objects, _ => true);
         }
 
-        public static void AutoGetValue(this PropertyInfo propertyInfo, System.Func<Object, bool> predicate)
+        public static string AutoGetValue(this PropertyInfo propertyInfo, Func<UnityEngine.Object, bool> predicate)
         {
-            propertyInfo.AutoGetValue(Object.FindObjectsOfType(propertyInfo.ReflectedType), predicate);
+            return propertyInfo.AutoGetValue(UnityEngine.Object.FindObjectsOfType(propertyInfo.ReflectedType), predicate);
         }
 
-        public static void AutoGetValue(this PropertyInfo propertyInfo, Object[] objects, System.Func<Object, bool> predicate)
+        public static string AutoGetValue(this PropertyInfo propertyInfo, UnityEngine.Object[] objects, Func<UnityEngine.Object, bool> predicate)
         {
             if (propertyInfo.IsStatic())
+                return propertyInfo.AutoGetValueStatic();
+
+            List<UnityEngine.Object> objectList = objects.Where(predicate).ToList();
+
+            if (objectList.Count == 0)
+                return StringConstantInternal.objectNotFoundWarning.Color(Color.yellow);
+
+            string s = "";
+            objectList.ForEach(x => s = s + propertyInfo.AutoGetValueInstance(x) + "\n");
+
+            return s.Substring(0, s.Length - 1);
+        }
+
+        private static string AutoGetValueInstance(this PropertyInfo propertyInfo, UnityEngine.Object obj)
+        {
+            object value;
+            try
             {
-                propertyInfo.AutoGetValueStatic();
-                return;
+                value = propertyInfo.GetValue(obj, null);
+            }
+            catch (Exception)
+            {
+                return StringConstantInternal.propertyGetValueInstanceError.ReplacedBy(propertyInfo.Name, obj.name, obj.GetInstanceID()).Color(Color.red);
             }
 
-            if (objects.Count(predicate) == 0)
+            return StringConstantInternal.propertyGetValueInstanceSuccess.ReplacedBy(propertyInfo.Name, obj.name, obj.GetInstanceID(), value.ToSimpleString());
+        }
+
+        private static string AutoGetValueStatic(this PropertyInfo propertyInfo)
+        {
+            object value;
+            try
             {
-                Console.Log(StringConstantInternal.objectNotFoundWarning.Color(Color.yellow));
-                return;
+                value = propertyInfo.GetValue(null, null);
+            }
+            catch (Exception)
+            {
+                return StringConstantInternal.propertyGetValueStaticError.ReplacedBy(propertyInfo.Name).Color(Color.red);
             }
 
-            objects.Where(predicate).ToList().ForEach(x => propertyInfo.AutoGetValueInstance(x));
+            return StringConstantInternal.propertyGetValueStaticSuccess.ReplacedBy(propertyInfo.Name, value.ToSimpleString());
         }
 
-        private static void AutoGetValueInstance(this PropertyInfo propertyInfo, Object obj)
+        public static string AutoSetValue(this PropertyInfo propertyInfo, object value)
         {
-            object value = propertyInfo.GetValue(obj, null);
-
-            Console.Log(StringConstantInternal.propertyGetValueInstanceMessage.ReplacedBy(propertyInfo.Name, obj.name, obj.GetInstanceID(), value.ToSimpleString()));
+            return propertyInfo.AutoSetValue(UnityEngine.Object.FindObjectsOfType(propertyInfo.ReflectedType), _ => true, value);
         }
 
-        private static void AutoGetValueStatic(this PropertyInfo propertyInfo)
+        public static string AutoSetValue(this PropertyInfo propertyInfo, UnityEngine.Object[] objects, object value)
         {
-            object value = propertyInfo.GetValue(null, null);
-
-            Console.Log(StringConstantInternal.propertyGetValueStaticMessage.ReplacedBy(propertyInfo.Name, value.ToSimpleString()));
+            return propertyInfo.AutoSetValue(objects, _ => true, value);
         }
 
-        public static void AutoSetValue(this PropertyInfo propertyInfo, object value)
+        public static string AutoSetValue(this PropertyInfo propertyInfo, Func<UnityEngine.Object, bool> predicate, object value)
         {
-            propertyInfo.AutoSetValue(Object.FindObjectsOfType(propertyInfo.ReflectedType), _ => true, value);
+            return propertyInfo.AutoSetValue(UnityEngine.Object.FindObjectsOfType(propertyInfo.ReflectedType), predicate, value);
         }
 
-        public static void AutoSetValue(this PropertyInfo propertyInfo, Object[] objects, object value)
-        {
-            propertyInfo.AutoSetValue(objects, _ => true, value);
-        }
-
-        public static void AutoSetValue(this PropertyInfo propertyInfo, System.Func<Object, bool> predicate, object value)
-        {
-            propertyInfo.AutoSetValue(Object.FindObjectsOfType(propertyInfo.ReflectedType), predicate, value);
-        }
-
-        public static void AutoSetValue(this PropertyInfo propertyInfo, Object[] objects, System.Func<Object, bool> predicate, object value)
+        public static string AutoSetValue(this PropertyInfo propertyInfo, UnityEngine.Object[] objects, Func<UnityEngine.Object, bool> predicate, object value)
         {
             if (propertyInfo.IsStatic())
-            {
-                propertyInfo.AutoSetValueStatic(value);
-                return;
-            }
+                return propertyInfo.AutoSetValueStatic(value);
 
-            if (objects.Count(predicate) == 0)
-            {
-                Console.Log(StringConstantInternal.objectNotFoundWarning.Color(Color.yellow));
-                return;
-            }
+            List<UnityEngine.Object> objectList = objects.Where(predicate).ToList();
 
-            objects.Where(predicate).ToList().ForEach(x => propertyInfo.AutoSetValueInstance(x, value));
+            if (objectList.Count == 0)
+                return StringConstantInternal.objectNotFoundWarning.Color(Color.yellow);
+
+            string s = "";
+            objectList.ForEach(x => s = s + propertyInfo.AutoSetValueInstance(x, value) + "\n");
+
+            return s.Substring(0, s.Length - 1);
         }
 
-        private static void AutoSetValueInstance(this PropertyInfo propertyInfo, Object obj, object value)
+        private static string AutoSetValueInstance(this PropertyInfo propertyInfo, UnityEngine.Object obj, object value)
         {
-            propertyInfo.SetValue(obj, value, null);
+            try
+            {
+                propertyInfo.SetValue(obj, value, null);
+            }
+            catch (Exception)
+            {
+                return StringConstantInternal.propertySetValueInstanceError.ReplacedBy(propertyInfo.Name, obj.name, obj.GetInstanceID()).Color(Color.red);
+            }
 
-            Console.Log(StringConstantInternal.propertySetValueInstanceMessage.ReplacedBy(propertyInfo.Name, obj.name, obj.GetInstanceID(), value.ToSimpleString()));
+            return StringConstantInternal.propertySetValueInstanceSuccess.ReplacedBy(propertyInfo.Name, obj.name, obj.GetInstanceID(), value.ToSimpleString());
         }
 
-        private static void AutoSetValueStatic(this PropertyInfo propertyInfo, object value)
+        private static string AutoSetValueStatic(this PropertyInfo propertyInfo, object value)
         {
-            propertyInfo.SetValue(null, value, null);
+            try
+            {
+                propertyInfo.SetValue(null, value, null);
+            }
+            catch (Exception)
+            {
+                return StringConstantInternal.propertySetValueStaticError.ReplacedBy(propertyInfo.Name).Color(Color.red);
+            }
 
-            Console.Log(StringConstantInternal.propertySetValueInstanceMessage.ReplacedBy(propertyInfo.Name, value.ToSimpleString()));
+            return StringConstantInternal.propertySetValueStaticSuccess.ReplacedBy(propertyInfo.Name, value.ToSimpleString());
         }
 
         public static bool IsStatic(this PropertyInfo propertyInfo)

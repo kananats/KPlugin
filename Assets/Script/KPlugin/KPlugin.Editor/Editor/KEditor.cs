@@ -23,7 +23,7 @@ namespace KPlugin.Editor
             monoBehaviour = monoBehaviours[0];
 
             HideDefaultAttributeHandler();
-            monoBehaviour.GetType().GetMethods(BindingFlagsConstantInternal.bindingFlags).Where(x =>
+            monoBehaviour.GetType().GetMethods(BindingFlagsConstantInternal.allBindingFlags).Where(x =>
             {
                 ParameterInfo[] parameterInfos = x.GetParameters();
 
@@ -60,7 +60,7 @@ namespace KPlugin.Editor
             if (!GUILayout.Button(name))
                 return;
 
-            methodInfo.AutoInvoke(monoBehaviours, null);
+            methodInfo.AutoInvoke(monoBehaviours, null).Log(false);
         }
     }
 }

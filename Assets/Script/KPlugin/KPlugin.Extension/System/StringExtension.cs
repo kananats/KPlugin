@@ -23,13 +23,44 @@ namespace KPlugin.Extension
 
         public static string Capital(this string s)
         {
-            if (s == null)
-                return null;
-
             if (s.Length > 1)
                 return char.ToUpper(s[0]) + s.Substring(1);
 
             return s.ToUpper();
+        }
+
+        public static string SingleQuote(this string s, bool singleQuote = true)
+        {
+            bool alreadyHas = s[0] == '\'' && s[s.Length - 1] == '\'';
+            if (singleQuote)
+            {
+                if (alreadyHas)
+                    return s;
+
+                return '\'' + s + '\'';
+            }
+
+            if (!alreadyHas)
+                return s;
+
+            return s.Substring(1, s.Length - 2);
+        }
+
+        public static string DoubleQuote(this string s, bool doubleQuote = true)
+        {
+            bool alreadyHas = s[0] == '\"' && s[s.Length - 1] == '\"';
+            if (doubleQuote)
+            {
+                if (alreadyHas)
+                    return s;
+
+                return '\"' + s + '\"';
+            }
+
+            if (!alreadyHas)
+                return s;
+
+            return s.Substring(1, s.Length - 2);
         }
 
         public static string Literal(this string s)
