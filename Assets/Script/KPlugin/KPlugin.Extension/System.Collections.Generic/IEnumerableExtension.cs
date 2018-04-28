@@ -7,12 +7,17 @@ namespace KPlugin.Extension
 {
     public static class IEnumerableExtension
     {
+        private static object _lock = new object();
+
         public static void SafeForEach<T>(this IEnumerable<T> list, Action<T> action)
         {
-            List<T> cloneList = list.ToList();
+            lock (_lock)
+            {
+                List<T> cloneList = list.ToList();
 
-            for (int i = 0; i < cloneList.Count; i++)
-                action(cloneList[i]);
+                for (int i = 0; i < cloneList.Count; i++)
+                    action(cloneList[i]);
+            }
         }
 
         public static void ClearAndDestroy<T>(this List<T> list) where T : MonoBehaviour
