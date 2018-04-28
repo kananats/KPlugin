@@ -84,6 +84,9 @@ namespace KPlugin.Debug
         [Console("mode")]
         public static void SetMode(string mode)
         {
+            if (instance.consoleOutput == null)
+                return;
+
             if (mode.EqualsIgnoreCase("a") || mode.EqualsIgnoreCase("auto") || mode.EqualsIgnoreCase("d") || mode.EqualsIgnoreCase("default"))
                 instance._mode = Mode.Auto;
 
@@ -100,6 +103,9 @@ namespace KPlugin.Debug
         [Console("size")]
         public static void SetFontSize(int size)
         {
+            if (instance.consoleOutput == null)
+                return;
+
             instance.consoleOutput.SetFontSize(size);
         }
     }

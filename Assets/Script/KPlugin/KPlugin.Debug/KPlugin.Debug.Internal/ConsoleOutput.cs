@@ -39,7 +39,7 @@ namespace KPlugin.Debug.Internal
 
         void Update()
         {
-            scrollRect.verticalNormalizedPosition += Input.mouseScrollDelta.y / 20.0f;
+            UpdateScrollPosition();
         }
 
         public void Log(string message)
@@ -112,6 +112,24 @@ namespace KPlugin.Debug.Internal
         public void HideLog()
         {
             content.gameObject.SetActive(false);
+        }
+
+        private void UpdateScrollPosition()
+        {
+            switch (Application.platform)
+            {
+                case RuntimePlatform.OSXEditor:
+                    scrollRect.verticalNormalizedPosition += Input.mouseScrollDelta.y / 100.0f;
+                    return;
+
+                case RuntimePlatform.WindowsEditor:
+                    scrollRect.verticalNormalizedPosition += Input.mouseScrollDelta.y / 20.0f;
+                    return;
+
+                default:
+                    scrollRect.verticalNormalizedPosition += Input.mouseScrollDelta.y / 100.0f;
+                    return;
+            }
         }
     }
 }
