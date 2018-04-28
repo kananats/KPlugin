@@ -4,7 +4,7 @@ namespace KPlugin
     using UnityEngine;
 
     [RequireComponent(typeof(RectTransform))]
-    public class SingletonUIMonoBehaviour<T> : SingletonMonoBehaviour<T> where T : SingletonMonoBehaviour<T>
+    public class SingletonUIMonoBehaviour<T> : SingletonMonoBehaviour<T> where T : SingletonUIMonoBehaviour<T>
     {
         private RectTransform _transform = null;
 
