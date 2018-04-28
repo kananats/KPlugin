@@ -42,6 +42,9 @@ namespace KPlugin.Debug
         [Console("log")]
         public static void Log(string message)
         {
+            if (instance == null)
+                return;
+
             if (instance.useDefaultLog)
                 message.Log();
 
@@ -57,7 +60,7 @@ namespace KPlugin.Debug
         [Console("clear")]
         public static void Clear()
         {
-            if (instance.consoleOutput == null)
+            if (instance == null || instance.consoleOutput == null)
                 return;
 
             instance.consoleOutput.Clear();
@@ -66,7 +69,7 @@ namespace KPlugin.Debug
         [Console("save")]
         public static void Save()
         {
-            if (instance.consoleOutput == null)
+            if (instance == null || instance.consoleOutput == null)
                 return;
 
             instance.consoleOutput.Save();
@@ -75,7 +78,7 @@ namespace KPlugin.Debug
         [Console("opacity")]
         public static void SetOpacity(int opacity)
         {
-            if (instance.consoleOutput == null)
+            if (instance == null || instance.consoleOutput == null)
                 return;
 
             instance.consoleOutput.SetOpacity(opacity);
@@ -84,7 +87,7 @@ namespace KPlugin.Debug
         [Console("mode")]
         public static void SetMode(string mode)
         {
-            if (instance.consoleOutput == null)
+            if (instance == null || instance.consoleOutput == null)
                 return;
 
             if (mode.EqualsIgnoreCase("a") || mode.EqualsIgnoreCase("auto") || mode.EqualsIgnoreCase("d") || mode.EqualsIgnoreCase("default"))
@@ -103,7 +106,7 @@ namespace KPlugin.Debug
         [Console("size")]
         public static void SetFontSize(int size)
         {
-            if (instance.consoleOutput == null)
+            if (instance == null || instance.consoleOutput == null)
                 return;
 
             instance.consoleOutput.SetFontSize(size);
