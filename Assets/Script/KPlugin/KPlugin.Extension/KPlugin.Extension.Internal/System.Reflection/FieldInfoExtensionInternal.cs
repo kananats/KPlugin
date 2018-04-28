@@ -1,9 +1,10 @@
-﻿namespace KPlugin.Extension.Internal
+﻿using System;
+using System.Linq;
+using System.Reflection;
+using UnityEngine;
+
+namespace KPlugin.Extension.Internal
 {
-    using System;
-    using System.Linq;
-    using System.Reflection;
-    using UnityEngine;
     using Constant.Internal;
 
     public static class FieldInfoExtensionInternal
@@ -33,7 +34,7 @@
 
             if (objects.Count(predicate) == 0)
             {
-                KPlugin.Debug.Console.Log(StringConstantInternal.objectNotFoundWarning.Color(Color.yellow));
+                Debug.Console.Log(StringConstantInternal.objectNotFoundWarning.Color(Color.yellow));
                 return;
             }
 
@@ -44,14 +45,14 @@
         {
             object value = fieldInfo.GetValue(obj);
 
-            KPlugin.Debug.Console.Log(StringConstantInternal.fieldGetValueInstanceMessage.ReplacedBy(fieldInfo.Name, obj.name, obj.GetInstanceID(), value.ToSimpleString()));
+            Debug.Console.Log(StringConstantInternal.fieldGetValueInstanceMessage.ReplacedBy(fieldInfo.Name, obj.name, obj.GetInstanceID(), value.ToSimpleString()));
         }
 
         private static void AutoGetValueStatic(this FieldInfo fieldInfo)
         {
             object value = fieldInfo.GetValue(null);
 
-            KPlugin.Debug.Console.Log(StringConstantInternal.fieldGetValueStaticMessage.ReplacedBy(fieldInfo.Name, value.ToSimpleString()));
+            Debug.Console.Log(StringConstantInternal.fieldGetValueStaticMessage.ReplacedBy(fieldInfo.Name, value.ToSimpleString()));
         }
 
         public static void AutoSetValue(this FieldInfo fieldInfo, object value)
@@ -79,7 +80,7 @@
 
             if (objects.Count(predicate) == 0)
             {
-                KPlugin.Debug.Console.Log(StringConstantInternal.objectNotFoundWarning.Color(Color.yellow));
+                Debug.Console.Log(StringConstantInternal.objectNotFoundWarning.Color(Color.yellow));
                 return;
             }
 
@@ -90,14 +91,14 @@
         {
             fieldInfo.SetValue(obj, value);
 
-            KPlugin.Debug.Console.Log(StringConstantInternal.fieldSetValueInstanceMessage.ReplacedBy(fieldInfo.Name, obj.name, obj.GetInstanceID(), value.ToSimpleString()));
+            Debug.Console.Log(StringConstantInternal.fieldSetValueInstanceMessage.ReplacedBy(fieldInfo.Name, obj.name, obj.GetInstanceID(), value.ToSimpleString()));
         }
 
         private static void AutoSetValueStatic(this FieldInfo fieldInfo, object value)
         {
             fieldInfo.SetValue(null, value);
 
-            KPlugin.Debug.Console.Log(StringConstantInternal.fieldSetValueStaticMessage.ReplacedBy(fieldInfo.Name, value.ToSimpleString()));
+            Debug.Console.Log(StringConstantInternal.fieldSetValueStaticMessage.ReplacedBy(fieldInfo.Name, value.ToSimpleString()));
         }
     }
 }

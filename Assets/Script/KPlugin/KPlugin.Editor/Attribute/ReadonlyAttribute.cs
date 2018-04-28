@@ -1,8 +1,11 @@
-﻿namespace KPlugin.Editor
-{
-    using UnityEngine;
-    using System;
+﻿using System;
+using UnityEngine;
 
+namespace KPlugin.Editor
+{
     [AttributeUsage(AttributeTargets.Field)]
-    public class ReadonlyAttribute : PropertyAttribute { }
+    public class ReadonlyAttribute : PropertyAttribute
+    {
+
+    }
 }

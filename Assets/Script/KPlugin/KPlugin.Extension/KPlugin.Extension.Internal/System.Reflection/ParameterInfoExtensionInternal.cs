@@ -1,9 +1,9 @@
-﻿namespace KPlugin.Extension.Internal
-{
-    using System;
-    using System.Linq;
-    using System.Reflection;
+﻿using System;
+using System.Linq;
+using System.Reflection;
 
+namespace KPlugin.Extension.Internal
+{
     public static class ParameterInfoExtensionInternal
     {
         public static T GetCustomAttribute<T>(this ParameterInfo parameterInfo, bool inherit = true) where T : Attribute

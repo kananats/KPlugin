@@ -1,7 +1,7 @@
-﻿namespace KPlugin.Extension
-{
-    using System;
+﻿using System;
 
+namespace KPlugin.Extension
+{
     public static class EnumExtension
     {
         public static bool HasFlag(this Enum variable, Enum flag)

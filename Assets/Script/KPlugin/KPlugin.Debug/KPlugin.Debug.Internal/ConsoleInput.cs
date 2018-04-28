@@ -1,12 +1,13 @@
-﻿namespace KPlugin.Debug
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Runtime.CompilerServices;
+using UnityEngine;
+using UnityEngine.UI;
+
+namespace KPlugin.Debug.Internal
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Reflection;
-    using System.Runtime.CompilerServices;
-    using UnityEngine;
-    using UnityEngine.UI;
     using Extension;
     using Extension.Internal;
     using Constant;

@@ -1,9 +1,10 @@
-﻿namespace KPlugin.Debug
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+
+namespace KPlugin.Debug.Internal
 {
-    using System.Collections;
-    using System.Collections.Generic;
-    using UnityEngine;
-    using UnityEngine.UI;
     using Extension;
 
     public class ConsoleOutput : MonoBehaviour

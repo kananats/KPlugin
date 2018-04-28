@@ -1,7 +1,7 @@
-﻿namespace KPlugin.Editor
-{
-    using System;
+﻿using System;
 
+namespace KPlugin.Editor
+{   
     [AttributeUsage(AttributeTargets.Class)]
     public class HideDefaultAttribute : Attribute { }
 }

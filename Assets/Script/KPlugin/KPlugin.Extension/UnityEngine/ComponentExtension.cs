@@ -1,8 +1,8 @@
-﻿namespace KPlugin.Extension
-{
-    using System;
-    using UnityEngine;
+﻿using System;
+using UnityEngine;
 
+namespace KPlugin.Extension
+{
     public static class ComponentExtension
     {
         public static void SetParent(this Component component, Component target)

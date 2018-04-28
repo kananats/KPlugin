@@ -1,17 +1,18 @@
-﻿namespace KPlugin.Editor
+﻿using System;
+using System.Linq;
+using System.Reflection;
+using System.Runtime.CompilerServices;
+using UnityEngine;
+using UnityEditor;
+
+namespace KPlugin.Editor
 {
-    using System;
-    using System.Linq;
-    using System.Reflection;
-    using System.Runtime.CompilerServices;
-    using UnityEditor;
-    using UnityEngine;
     using Extension;
     using Extension.Internal;
     using Constant.Internal;
 
     [CustomEditor(typeof(MonoBehaviour), true), CanEditMultipleObjects]
-    public class KEditor : Editor
+    public class KEditor : UnityEditor.Editor
     {
         private MonoBehaviour[] monoBehaviours;
         private MonoBehaviour monoBehaviour;

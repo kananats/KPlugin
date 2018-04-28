@@ -1,7 +1,7 @@
-﻿namespace KPlugin.Constant
-{
-    using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 
+namespace KPlugin.Constant
+{
     public static class RegexConstant
     {
         private static Regex _numeric;

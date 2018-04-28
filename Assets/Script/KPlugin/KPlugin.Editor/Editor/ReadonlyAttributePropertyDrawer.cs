@@ -1,8 +1,8 @@
-﻿namespace KPlugin.Editor
-{
-    using UnityEngine;
-    using UnityEditor;
+﻿using UnityEngine;
+using UnityEditor;
 
+namespace KPlugin.Editor
+{
     [CustomPropertyDrawer(typeof(ReadonlyAttribute))]
     public class ReadonlyAttributePropertyDrawer : PropertyDrawer
     {

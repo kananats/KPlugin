@@ -1,8 +1,8 @@
-﻿namespace KPlugin.Extension
-{
-    using System;
-    using UnityEngine;
+﻿using System;
+using UnityEngine;
 
+namespace KPlugin.Extension
+{
     public static class GameObjectExtension
     {
         public static void SetParent(this GameObject gameObject, Component target)
@@ -40,4 +40,3 @@
         }
     }
 }
- 

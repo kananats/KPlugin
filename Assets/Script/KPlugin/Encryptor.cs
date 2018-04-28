@@ -1,10 +1,10 @@
+using System;
+using System.IO;
+using System.Text;
+using System.Security.Cryptography;
+
 namespace KPlugin
 {
-    using System;
-    using System.Security.Cryptography;
-    using System.IO;
-    using System.Text;
-
     public static class Encryptor
     {
         private static byte[] _salt = Encoding.ASCII.GetBytes("o6806642kbM7c5");

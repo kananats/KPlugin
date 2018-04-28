@@ -1,29 +1,31 @@
-﻿namespace KPlugin.Extension.Internal
+﻿using System;
+using System.Linq;
+using System.Reflection;
+using UnityEngine;
+
+namespace KPlugin.Extension.Internal
 {
-    using System.Linq;
-    using System.Reflection;
-    using UnityEngine;
-    using KPlugin.Debug;
+    using Debug;
     using Constant.Internal;
 
     public static class MethodBaseExtensionInternal
     {
         public static void AutoInvoke(this MethodBase methodBase, object[] parameters)
         {
-            methodBase.AutoInvoke(Object.FindObjectsOfType(methodBase.ReflectedType), _ => true, parameters);
+            methodBase.AutoInvoke(UnityEngine.Object.FindObjectsOfType(methodBase.ReflectedType), _ => true, parameters);
         }
 
-        public static void AutoInvoke(this MethodBase methodBase, Object[] objects, object[] parameters)
+        public static void AutoInvoke(this MethodBase methodBase, UnityEngine.Object[] objects, object[] parameters)
         {
             methodBase.AutoInvoke(objects, _ => true, parameters);
         }
 
-        public static void AutoInvoke(this MethodBase methodBase, System.Func<Object, bool> predicate, object[] parameters)
+        public static void AutoInvoke(this MethodBase methodBase, Func<UnityEngine.Object, bool> predicate, object[] parameters)
         {
-            methodBase.AutoInvoke(Object.FindObjectsOfType(methodBase.ReflectedType), predicate, parameters);
+            methodBase.AutoInvoke(UnityEngine.Object.FindObjectsOfType(methodBase.ReflectedType), predicate, parameters);
         }
 
-        public static void AutoInvoke(this MethodBase methodBase, Object[] objects, System.Func<Object, bool> predicate, object[] parameters)
+        public static void AutoInvoke(this MethodBase methodBase, UnityEngine.Object[] objects, Func<UnityEngine.Object, bool> predicate, object[] parameters)
         {
             ParameterInfo[] parameterInfos = methodBase.GetParameters();
 
@@ -50,7 +52,7 @@
             objects.Where(predicate).ToList().ForEach(x => methodBase.AutoInvokeInstance(x, fixedParameters));
         }
 
-        private static void AutoInvokeInstance(this MethodBase methodBase, Object obj, object[] fixedParameters)
+        private static void AutoInvokeInstance(this MethodBase methodBase, UnityEngine.Object obj, object[] fixedParameters)
         {
             object value = methodBase.Invoke(obj, fixedParameters);
 

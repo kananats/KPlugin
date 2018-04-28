@@ -1,7 +1,7 @@
-﻿namespace KPlugin.Editor
-{
-    using System;
+﻿using System;
 
+namespace KPlugin.Editor
+{
     [AttributeUsage(AttributeTargets.Method)]
     public class SerializeMethodAttribute : Attribute
     {
@@ -17,7 +17,10 @@
             private set;
         }
 
-        public SerializeMethodAttribute(Mode mode = Mode.All) : this(null, mode) { }
+        public SerializeMethodAttribute(Mode mode = Mode.All) : this(null, mode)
+        {
+
+        }
 
         public SerializeMethodAttribute(string name, Mode mode = Mode.All)
         {

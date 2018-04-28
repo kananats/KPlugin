@@ -1,8 +1,9 @@
-﻿namespace KPlugin.Extension.Internal
+﻿using System.Linq;
+using System.Reflection;
+using UnityEngine;
+
+namespace KPlugin.Extension.Internal
 {
-    using System.Linq;
-    using System.Reflection;
-    using UnityEngine;
     using Debug;
     using Constant.Internal;
 

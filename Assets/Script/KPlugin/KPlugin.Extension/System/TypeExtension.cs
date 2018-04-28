@@ -1,9 +1,9 @@
-﻿namespace KPlugin.Extension
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
+namespace KPlugin.Extension
+{
     public static class TypeExtension
     {
         public static bool IsGenericSubclass(this Type type, Type genericType)

@@ -1,7 +1,7 @@
-﻿namespace KPlugin.Debug
-{
-    using System;
+﻿using System;
 
+namespace KPlugin.Debug
+{
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property | AttributeTargets.Method)]
     public class ConsoleAttribute : Attribute
     {

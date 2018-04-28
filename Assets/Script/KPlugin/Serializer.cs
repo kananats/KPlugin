@@ -1,8 +1,8 @@
+using System.IO;
+using System.Xml.Serialization;
+
 namespace KPlugin
 {
-    using System.Xml.Serialization;
-    using System.IO;
-
     public static class Serializer
     {
         public static string Serialize<T>(T content)

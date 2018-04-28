@@ -1,9 +1,9 @@
-﻿namespace KPlugin.Debug.Internal
-{
-    using UnityEngine;
-    using UnityEditor;
-    using UnityEngine.EventSystems;
+﻿using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEditor;
 
+namespace KPlugin.Debug.Internal
+{
     public class ConsoleEditor : MonoBehaviour
     {
         [MenuItem("GameObject/Create Other/Console (with Canvas)")]

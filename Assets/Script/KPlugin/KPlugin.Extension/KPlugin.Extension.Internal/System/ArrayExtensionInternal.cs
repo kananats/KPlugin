@@ -1,7 +1,7 @@
-﻿namespace KPlugin.Extension.Internal
-{
-    using System;
+﻿using System;
 
+namespace KPlugin.Extension.Internal
+{
     public static class ArrayExtensionInternal
     {
         public static string ToSimpleString(this Array array, bool showType = false)

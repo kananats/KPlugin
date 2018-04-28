@@ -1,7 +1,8 @@
-﻿namespace KPlugin.Extension.Internal
+﻿using System.Text.RegularExpressions;
+using UnityEngine;
+
+namespace KPlugin.Extension.Internal
 {
-    using System.Text.RegularExpressions;
-    using UnityEngine;
     using Extension;
 
     public sealed class KString
@@ -90,7 +91,7 @@
 
         public KString ReplacedBy(params object[] args)
         {
-            text = text.ReplacedBy(args); 
+            text = text.ReplacedBy(args);
             return this;
         }
 

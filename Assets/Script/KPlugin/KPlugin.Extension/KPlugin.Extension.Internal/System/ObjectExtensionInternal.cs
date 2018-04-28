@@ -1,7 +1,7 @@
-﻿namespace KPlugin.Extension.Internal
-{
-    using System;
+﻿using System;
 
+namespace KPlugin.Extension.Internal
+{
     public static class ObjectExtensionInternal
     {
         public static object ChangeTypeWithCompatibility(this object input, Type targetType, out int compatibility)

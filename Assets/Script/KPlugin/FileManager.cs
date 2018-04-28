@@ -1,8 +1,9 @@
+using System;
+using System.IO;
+using UnityEngine;
+
 namespace KPlugin
 {
-    using UnityEngine;
-    using System.IO;
-    using System;
     using Extension;
     using Constant.Internal;
 

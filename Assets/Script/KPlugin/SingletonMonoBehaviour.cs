@@ -1,8 +1,7 @@
-﻿
+﻿using UnityEngine;
+
 namespace KPlugin
 {
-    using UnityEngine;
-
     public class SingletonMonoBehaviour<T> : MonoBehaviour where T : SingletonMonoBehaviour<T>
     {
         private static object _lock = new object();
@@ -17,7 +16,7 @@ namespace KPlugin
                 {
                     if (_instance == null)
                     {
-                        _instance = (T)FindObjectOfType(typeof(T));
+                        _instance = FindObjectOfType<T>();
 
                         if (FindObjectsOfType(typeof(T)).Length > 1)
                         {

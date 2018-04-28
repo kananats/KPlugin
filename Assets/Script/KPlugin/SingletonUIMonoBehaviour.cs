@@ -1,8 +1,7 @@
-﻿
+﻿using UnityEngine;
+
 namespace KPlugin
 {
-    using UnityEngine;
-
     [RequireComponent(typeof(RectTransform))]
     public class SingletonUIMonoBehaviour<T> : SingletonMonoBehaviour<T> where T : SingletonUIMonoBehaviour<T>
     {

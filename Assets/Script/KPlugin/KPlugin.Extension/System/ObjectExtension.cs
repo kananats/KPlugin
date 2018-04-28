@@ -1,12 +1,13 @@
-﻿namespace KPlugin.Extension
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+
+namespace KPlugin.Extension
 {
-    using System;
-    using System.Collections;
-    using System.Linq;
-    using System.Collections.Generic;
-    using System.Reflection;
-    using UnityEngine;
     using Internal;
+    using Debug;
 
     public static class ObjectExtension
     {
@@ -26,7 +27,7 @@
 
         public static void Log(this object obj, string format, bool useSimpleString = true)
         {
-            Debug.Log(format.ReplacedBy(useSimpleString ? obj.ToSimpleString() : obj.ToString()));
+            UnityEngine.Debug.Log(format.ReplacedBy(useSimpleString ? obj.ToSimpleString() : obj.ToString()));
         }
 
         public static void LogConsole(this object obj, bool useSimpleString = true)
@@ -36,7 +37,7 @@
 
         public static void LogConsole(this object obj, string format, bool useSimpleString = true)
         {
-            KPlugin.Debug.Console.Log(format.ReplacedBy(useSimpleString ? obj.ToSimpleString() : obj.ToString()));
+            Console.Log(format.ReplacedBy(useSimpleString ? obj.ToSimpleString() : obj.ToString()));
         }
 
         public static string ToSimpleString(this object obj, bool showType = false)
