@@ -171,11 +171,6 @@ namespace KPlugin.Debug.Internal
                     }
 
                     Type type = y.FieldType;
-                    if (!type.IsPrimitive && type != typeof(string) && !type.IsEnum)
-                    {
-                        StringConstantInternal.unsupportedFieldTypeError.ReplacedBy(field).Color(Color.red).LogConsole();
-                        return;
-                    }
 
                     fieldInfoDictionary[field] = y;
                 });
@@ -202,13 +197,6 @@ namespace KPlugin.Debug.Internal
                     if (fieldInfoDictionary.ContainsKey(property) || propertyInfoDictionary.ContainsKey(property) || methodInfoDictionary.ContainsKey(property))
                     {
                         StringConstantInternal.propertyDuplicatedError.ReplacedBy(property).Color(Color.red).LogConsole();
-                        return;
-                    }
-
-                    Type type = y.PropertyType;
-                    if (!type.IsPrimitive && type != typeof(string) && !type.IsEnum)
-                    {
-                        StringConstantInternal.propertyUnsupportedTypeError.ReplacedBy(property).Color(Color.red).LogConsole();
                         return;
                     }
 
@@ -352,7 +340,7 @@ namespace KPlugin.Debug.Internal
                 case Command.Get:
                     if (arguments.Length != 0)
                     {
-                        StringConstantInternal.fieldUnexpectedArgumentsError.ReplacedBy("get", name).Color(Color.red).LogConsole();
+                        StringConstantInternal.fieldUnexpectedArgumentsError.ReplacedBy("get", fieldInfo.Name).Color(Color.red).LogConsole();
                         return;
                     }
                     fieldInfo.AutoGetValue(predicate).LogConsole();
@@ -361,7 +349,13 @@ namespace KPlugin.Debug.Internal
                 case Command.Set:
                     if (arguments.Length != 1)
                     {
-                        StringConstantInternal.fieldUnexpectedArgumentsError.ReplacedBy("set", name).Color(Color.red).LogConsole();
+                        StringConstantInternal.fieldUnexpectedArgumentsError.ReplacedBy("set", fieldInfo.Name).Color(Color.red).LogConsole();
+                        return;
+                    }
+
+                    if (!type.IsPrimitive && type != typeof(string) && !type.IsEnum)
+                    {
+                        StringConstantInternal.fieldUnsupportedOperationError.ReplacedBy("set", fieldInfo.Name).Color(Color.red).LogConsole();
                         return;
                     }
 
@@ -392,26 +386,32 @@ namespace KPlugin.Debug.Internal
                 case Command.Get:
                     if (!propertyInfo.CanRead)
                     {
-                        StringConstantInternal.propertyUndefinedAccessorError.ReplacedBy("get", name).Color(Color.red).LogConsole();
+                        StringConstantInternal.propertyUndefinedAccessorError.ReplacedBy("get", propertyInfo.Name).Color(Color.red).LogConsole();
                         return;
                     }
                     if (arguments.Length != 0)
                     {
-                        StringConstantInternal.propertyUnexpectedArgumentsError.ReplacedBy("get", name).Color(Color.red).LogConsole();
+                        StringConstantInternal.propertyUnexpectedArgumentsError.ReplacedBy("get", propertyInfo.Name).Color(Color.red).LogConsole();
                         return;
                     }
+
                     propertyInfo.AutoGetValue(predicate).LogConsole();
                     return;
 
                 case Command.Set:
                     if (!propertyInfo.CanWrite)
                     {
-                        StringConstantInternal.propertyUndefinedAccessorError.ReplacedBy("set", name).Color(Color.red).LogConsole();
+                        StringConstantInternal.propertyUndefinedAccessorError.ReplacedBy("set", propertyInfo.Name).Color(Color.red).LogConsole();
                         return;
                     }
                     if (arguments.Length != 1)
                     {
-                        StringConstantInternal.propertyUnexpectedArgumentsError.ReplacedBy("set", name).Color(Color.red).LogConsole();
+                        StringConstantInternal.propertyUnexpectedArgumentsError.ReplacedBy("set", propertyInfo.Name).Color(Color.red).LogConsole();
+                        return;
+                    }
+                    if (!type.IsPrimitive && type != typeof(string) && !type.IsEnum)
+                    {
+                        StringConstantInternal.propertyUnsupportedOperationError.ReplacedBy("set", propertyInfo.Name).Color(Color.red).LogConsole();
                         return;
                     }
 

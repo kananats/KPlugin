@@ -37,7 +37,7 @@ namespace KPlugin.Extension
 
         public static void LogConsole(this object obj, string format, bool useSimpleString = true)
         {
-            Console.Log(format.ReplacedBy(useSimpleString ? obj.ToSimpleString() : obj.ToString()).DoubleQuote(false).Trim());
+            Console.Log(format.ReplacedBy(useSimpleString ? obj.ToSimpleString() : obj.ToString()).DoubleQuote(false));
         }
 
         public static string ToSimpleString(this object obj, bool showType = false)
@@ -69,7 +69,7 @@ namespace KPlugin.Extension
                 IDictionary dictionary = obj as IDictionary;
                 string s = "{";
                 foreach (object o in dictionary.Keys)
-                    s += "\"{0}\": {1}, ".ReplacedBy(o.ToSimpleString(showType), dictionary[o].ToSimpleString(showType));
+                    s += "{0}: {1}, ".ReplacedBy(o.ToSimpleString(showType), dictionary[o].ToSimpleString(showType));
 
                 return s.Length >= 2 ? s.Substring(0, s.Length - 2) + "}" : "{ }";
             }
@@ -87,7 +87,7 @@ namespace KPlugin.Extension
 
             // Class that overrides ToString()
             if (type.GetMethods().Any(x => x.Name == "ToString" && !x.IsStatic && x.DeclaringType == type))
-                return (showType ? "({0})".ReplacedBy(type.Name) : "") + " " + obj.ToString();
+                return (showType ? "({0}) ".ReplacedBy(type.Name) : "") + obj.ToString();
 
             // General Class
             return obj.ToDictionary().ToSimpleString(showType);
