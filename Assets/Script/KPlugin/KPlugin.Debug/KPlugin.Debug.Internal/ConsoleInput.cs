@@ -554,6 +554,10 @@ namespace KPlugin.Debug.Internal
 
         private static object Box(string s)
         {
+            string sNoDoubleQuote = s.DoubleQuote(false);
+            if (s != sNoDoubleQuote)
+                return sNoDoubleQuote;
+
             bool boolOutput;
             int intOutput;
             float floatOutput;

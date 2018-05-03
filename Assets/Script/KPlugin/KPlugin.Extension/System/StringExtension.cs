@@ -31,7 +31,11 @@ namespace KPlugin.Extension
 
         public static string SingleQuote(this string s, bool singleQuote = true)
         {
+            if (s.Length <= 1)
+                return s;
+
             bool alreadyHas = s[0] == '\'' && s[s.Length - 1] == '\'';
+
             if (singleQuote)
             {
                 if (alreadyHas)
@@ -43,14 +47,19 @@ namespace KPlugin.Extension
             if (!alreadyHas)
                 return s;
 
-            return s.Substring(1, s.Length - 2);
+            return s.Substring(1, s.Length - 2).SingleQuote(singleQuote);
         }
 
         public static string DoubleQuote(this string s, bool doubleQuote = true)
         {
+            if (s.Length <= 1)
+                return s;
+
             bool alreadyHas = s[0] == '\"' && s[s.Length - 1] == '\"';
+
             if (doubleQuote)
             {
+                UnityEngine.Debug.Log("2");
                 if (alreadyHas)
                     return s;
 
@@ -60,7 +69,7 @@ namespace KPlugin.Extension
             if (!alreadyHas)
                 return s;
 
-            return s.Substring(1, s.Length - 2);
+            return s.Substring(1, s.Length - 2).DoubleQuote(doubleQuote);
         }
 
         public static string Literal(this string s)
