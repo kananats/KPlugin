@@ -48,8 +48,8 @@ namespace KPlugin.Extension
 
             Type type = obj.GetType();
 
-            // Primitive
-            if (type.IsPrimitive)
+            // Primitive or Enum
+            if (type.IsPrimitive || type.IsEnum)
                 return (showType ? "({0}) ".ReplacedBy(type.Name) : "") + obj;
 
             // String
