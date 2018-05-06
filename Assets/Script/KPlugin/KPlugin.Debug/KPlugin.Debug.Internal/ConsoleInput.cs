@@ -294,7 +294,7 @@ namespace KPlugin.Debug.Internal
             }
             catch (Exception)
             {
-                StringConstantInternal.unexpectedInputError.LogConsole();
+                StringConstantInternal.unexpectedInputError.ReplacedBy(input).LogConsole();
                 ClearInputField();
 
                 return;
