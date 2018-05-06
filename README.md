@@ -5,16 +5,12 @@ Status: active
 
 Prerequisite
 ---
-KPlugin is developed on Unity 5.5.1f1
+KPlugin is developed on Unity 2018.1.0f2
 
 Contact
 ---
 Kananat Suwanviwatana (a.k.a @kdev)
 Email: kananat.s@gmail.com
-
-Feature
----
-To be written
  
 License
 ---
