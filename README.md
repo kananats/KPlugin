@@ -17,15 +17,15 @@ Import KPlugin folder into Assets/Script
 Use following directive for corresponding features
 
 Serialize Method
-Namespace: KPlugin.Editor
+(namespace: KPlugin.Editor)
 Any method (without non optianal parameter/ ref/ out/ params keyword) can be serialized as button to invoke as compile time and runtime
 
 Console
-Namespace: KPlugin.Debug
+(namespace: KPlugin.Debug)
 Console allows interactive UI which can tweak any attribute/ property/ method at runtime.
 
 Extension
-Namespace: KPlugin.Extension
+(namespace: KPlugin.Extension)
 There are plenty of useful extension methods which makes debug handy.
 Object.ToSimpleString();
 Object.ToDictionary();
