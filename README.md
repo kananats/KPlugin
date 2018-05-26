@@ -4,6 +4,10 @@ KPlugin is Unity Plugin by @kdev
 Tailored for richer debugging purpose
 Core features consists of Serialize Method, Console, Extension
 
+See introduction slide here:
+https://github.com/kananats/KPlugin/blob/master/Kplugin.pptx (EN)
+https://github.com/kananats/KPlugin/blob/master/Kplugin%20JP.pptx (JP)
+
 Status: active
 
 Prerequisite
