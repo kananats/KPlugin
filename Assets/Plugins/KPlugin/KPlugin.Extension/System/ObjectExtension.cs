@@ -15,7 +15,7 @@ namespace KPlugin.Extension
         {
             Dictionary<string, object> dictionary = new Dictionary<string, object>();
 
-            obj.GetType().GetFields(BindingFlagsConstantInternal.instanceBindingFlags).ToList().ForEach(x => dictionary[x.Name] = x.GetValue(obj));
+            obj.GetType().GetFields(BindingFlagsConstantInternal.instanceBindingFlags).ToList().ForEach(field => dictionary[field.Name] = field.GetValue(obj));
 
             return dictionary;
         }
@@ -86,7 +86,7 @@ namespace KPlugin.Extension
             }
 
             // Class that overrides ToString()
-            if (type.GetMethods().Any(x => x.Name == "ToString" && !x.IsStatic && x.DeclaringType == type))
+            if (type.GetMethods().Any(method => method.Name == "ToString" && !method.IsStatic && method.DeclaringType == type))
                 return (showType ? "({0}) ".ReplacedBy(type.Name) : "") + obj.ToString();
 
             // General Class

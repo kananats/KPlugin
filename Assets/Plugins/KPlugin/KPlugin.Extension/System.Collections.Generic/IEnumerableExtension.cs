@@ -22,7 +22,7 @@ namespace KPlugin.Extension
 
         public static void ClearAndDestroy<T>(this List<T> list) where T : MonoBehaviour
         {
-            list.SafeForEach(x => UnityEngine.Object.Destroy(x.gameObject));
+            list.SafeForEach(element => UnityEngine.Object.Destroy(element.gameObject));
 
             list.Clear();
         }

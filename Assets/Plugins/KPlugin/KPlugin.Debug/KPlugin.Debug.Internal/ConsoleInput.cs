@@ -69,7 +69,7 @@ namespace KPlugin.Debug.Internal
         {
             get
             {
-                return y => targetIdList == null || targetIdList.Any(z => z == y.GetInstanceID());
+                return target => targetIdList == null || targetIdList.Any(element => element == target.GetInstanceID());
             }
         }
 
@@ -137,9 +137,9 @@ namespace KPlugin.Debug.Internal
         private void InitializeDictionary()
         {
             typeList = new List<Type>();
-            AppDomain.CurrentDomain.GetAssemblies().ToList().ForEach(x =>
+            AppDomain.CurrentDomain.GetAssemblies().ToList().ForEach(assembly =>
             {
-                typeList.AddRange(x.GetTypes().Where(y => y.IsAbstract && y.IsSealed || !y.IsAbstract && !y.IsInterface && !y.IsGenericType && typeof(MonoBehaviour).IsAssignableFrom(y)));
+                typeList.AddRange(assembly.GetTypes().Where(type => type.IsAbstract && type.IsSealed || !type.IsAbstract && !type.IsInterface && !type.IsGenericType && typeof(MonoBehaviour).IsAssignableFrom(type)));
             });
 
             fieldInfoDictionary = new Dictionary<string, FieldInfo>();
@@ -153,104 +153,101 @@ namespace KPlugin.Debug.Internal
 
         private void InitializeFieldInfoDictionary()
         {
-            typeList.ForEach(x =>
+            typeList.ForEach(type =>
             {
-                x.GetFields(BindingFlagsConstantInternal.allBindingFlags).ToList().ForEach(y =>
+                type.GetFields(BindingFlagsConstantInternal.allBindingFlags).ToList().ForEach(field =>
                 {
-                    ConsoleAttribute attribute = y.GetCustomAttribute<ConsoleAttribute>();
+                    ConsoleAttribute attribute = field.GetCustomAttribute<ConsoleAttribute>();
                     if (attribute == null)
                         return;
 
-                    string field = attribute.name;
-                    if (field == null || !field.IsMatch(RegexConstant.alphanumericOrUnderscore))
+                    string name = attribute.name;
+                    if (name == null || !name.IsMatch(RegexConstant.alphanumericOrUnderscore))
                     {
-                        StringConstantInternal.unsupportedFieldNameError.ReplacedBy(field).Color(Color.red).LogConsole();
+                        StringConstantInternal.unsupportedFieldNameError.ReplacedBy(name).Color(Color.red).LogConsole();
                         return;
                     }
 
-                    if (fieldInfoDictionary.ContainsKey(field) || propertyInfoDictionary.ContainsKey(field) || methodInfoDictionary.ContainsKey(field))
+                    if (fieldInfoDictionary.ContainsKey(name) || propertyInfoDictionary.ContainsKey(name) || methodInfoDictionary.ContainsKey(name))
                     {
-                        StringConstantInternal.duplicatedFieldError.ReplacedBy(field).Color(Color.red).LogConsole();
+                        StringConstantInternal.duplicatedFieldError.ReplacedBy(name).Color(Color.red).LogConsole();
                         return;
                     }
 
-                    Type type = y.FieldType;
-
-                    fieldInfoDictionary[field] = y;
+                    fieldInfoDictionary[name] = field;
                 });
             });
         }
 
         private void InitializePropertyInfoDictionary()
         {
-            typeList.ForEach(x =>
+            typeList.ForEach(type =>
             {
-                x.GetProperties(BindingFlagsConstantInternal.allBindingFlags).ToList().ForEach(y =>
+                type.GetProperties(BindingFlagsConstantInternal.allBindingFlags).ToList().ForEach(property =>
                 {
-                    ConsoleAttribute attribute = y.GetCustomAttribute<ConsoleAttribute>();
+                    ConsoleAttribute attribute = property.GetCustomAttribute<ConsoleAttribute>();
                     if (attribute == null)
                         return;
 
-                    string property = attribute.name;
-                    if (property == null || !property.IsMatch(RegexConstant.alphanumericOrUnderscore))
+                    string name = attribute.name;
+                    if (name == null || !name.IsMatch(RegexConstant.alphanumericOrUnderscore))
                     {
-                        StringConstantInternal.propertyUnsupportedNameError.ReplacedBy(property).Color(Color.red).LogConsole();
+                        StringConstantInternal.propertyUnsupportedNameError.ReplacedBy(name).Color(Color.red).LogConsole();
                         return;
                     }
 
-                    if (fieldInfoDictionary.ContainsKey(property) || propertyInfoDictionary.ContainsKey(property) || methodInfoDictionary.ContainsKey(property))
+                    if (fieldInfoDictionary.ContainsKey(name) || propertyInfoDictionary.ContainsKey(name) || methodInfoDictionary.ContainsKey(name))
                     {
-                        StringConstantInternal.propertyDuplicatedError.ReplacedBy(property).Color(Color.red).LogConsole();
+                        StringConstantInternal.propertyDuplicatedError.ReplacedBy(name).Color(Color.red).LogConsole();
                         return;
                     }
 
-                    propertyInfoDictionary[property] = y;
+                    propertyInfoDictionary[name] = property;
                 });
             });
         }
 
         private void InitializeMethodInfoDictionary()
         {
-            typeList.ForEach(x =>
+            typeList.ForEach(type =>
             {
-                x.GetMethods(BindingFlagsConstantInternal.allBindingFlags).Where(y => !y.IsAbstract && !y.IsGenericMethod && !y.IsDefined<ExtensionAttribute>()).ToList().ForEach(y =>
+                type.GetMethods(BindingFlagsConstantInternal.allBindingFlags).Where(method => !method.IsAbstract && !method.IsGenericMethod && !method.IsDefined<ExtensionAttribute>()).ToList().ForEach(method =>
                 {
-                    ConsoleAttribute attribute = y.GetCustomAttribute<ConsoleAttribute>();
+                    ConsoleAttribute attribute = method.GetCustomAttribute<ConsoleAttribute>();
                     if (attribute == null)
                         return;
 
-                    string method = attribute.name;
-                    if (method == null || !method.IsMatch(RegexConstant.alphanumericOrUnderscore))
+                    string name = attribute.name;
+                    if (name == null || !name.IsMatch(RegexConstant.alphanumericOrUnderscore))
                     {
-                        StringConstantInternal.methodUnsupportedNameError.ReplacedBy(method).Color(Color.red).LogConsole();
+                        StringConstantInternal.methodUnsupportedNameError.ReplacedBy(name).Color(Color.red).LogConsole();
                         return;
                     }
 
-                    ParameterInfo[] parameterInfos = y.GetParameters();
-                    if (parameterInfos.Length >= 1 && parameterInfos[parameterInfos.Length - 1].IsDefined<ParamArrayAttribute>() || parameterInfos.ToList().Any(z =>
+                    ParameterInfo[] parameterInfos = method.GetParameters();
+                    if (parameterInfos.Length >= 1 && parameterInfos[parameterInfos.Length - 1].IsDefined<ParamArrayAttribute>() || parameterInfos.ToList().Any(parameter =>
                     {
-                        Type type = z.ParameterType;
-                        return z.IsOut || type.IsByRef || !type.IsPrimitive && type != typeof(string) && !type.IsEnum;
+                        return parameter.IsOut || parameter.ParameterType.IsByRef || !parameter.ParameterType.IsPrimitive && parameter.ParameterType != typeof(string) && !parameter.ParameterType.IsEnum;
                     }))
                     {
-                        StringConstantInternal.methodUnsupportedArgumentError.ReplacedBy(method).Color(Color.red).LogConsole();
+                        StringConstantInternal.methodUnsupportedArgumentError.ReplacedBy(name).Color(Color.red).LogConsole();
                         return;
                     }
 
-                    if (fieldInfoDictionary.ContainsKey(method) || propertyInfoDictionary.ContainsKey(method))
+                    if (fieldInfoDictionary.ContainsKey(name) || propertyInfoDictionary.ContainsKey(name))
                     {
-                        StringConstantInternal.methodDuplicatedError.ReplacedBy(method).Color(Color.red).LogConsole();
+                        StringConstantInternal.methodDuplicatedError.ReplacedBy(name).Color(Color.red).LogConsole();
                         return;
                     }
 
-                    if (!methodInfoDictionary.ContainsKey(method))
-                        methodInfoDictionary[method] = new List<MethodInfo>();
+                    if (!methodInfoDictionary.ContainsKey(name))
+                        methodInfoDictionary[name] = new List<MethodInfo>();
 
-                    List<MethodInfo> methodInfoList = methodInfoDictionary[method];
+                    List<MethodInfo> methodInfoList = methodInfoDictionary[name];
 
-                    if (methodInfoList.Any(z =>
+                    if (methodInfoList.Any(otherMethod =>
                     {
-                        ParameterInfo[] otherParameterInfos = z.GetParameters();
+                        ParameterInfo[] otherParameterInfos = otherMethod.GetParameters();
                         if (parameterInfos.Length != otherParameterInfos.Length)
                             return false;
 
@@ -261,11 +258,11 @@ namespace KPlugin.Debug.Internal
                         return true;
                     }))
                     {
-                        StringConstantInternal.methodDuplicatedError.ReplacedBy(method).Color(Color.red).LogConsole();
+                        StringConstantInternal.methodDuplicatedError.ReplacedBy(name).Color(Color.red).LogConsole();
                         return;
                     }
 
-                    methodInfoList.Add(y);
+                    methodInfoList.Add(method);
                 });
             });
         }
@@ -503,14 +500,14 @@ namespace KPlugin.Debug.Internal
 
             string option = null;
 
-            input.SplitByWhiteSpaceExceptQuote().ToList().ForEach(x =>
+            input.SplitByWhiteSpaceExceptQuote().ToList().ForEach(token =>
             {
                 if (name == null)
                 {
-                    if (!x.IsMatch(RegexConstant.alphabet))
+                    if (!token.IsMatch(RegexConstant.alphabet))
                         throw new NotSupportedException();
 
-                    switch (x)
+                    switch (token)
                     {
                         case "get":
                             command = Command.Get;
@@ -524,14 +521,14 @@ namespace KPlugin.Debug.Internal
                             if (command == Command.Unknown)
                                 command = Command.Method;
 
-                            name = x;
+                            name = token;
                             return;
                     }
                 }
 
-                if (x[0] == '-' && x.Substring(1).IsMatch(RegexConstant.alphabet))
+                if (token[0] == '-' && token.Substring(1).IsMatch(RegexConstant.alphabet))
                 {
-                    option = x.Substring(1);
+                    option = token.Substring(1);
                     if (optionDictionary.ContainsKey(option))
                         throw new NotSupportedException();
 
@@ -541,11 +538,11 @@ namespace KPlugin.Debug.Internal
 
                 if (option == null)
                 {
-                    argumentList.Add(Box(x));
+                    argumentList.Add(Box(token));
                     return;
                 }
 
-                optionDictionary[option].Add(Box(x));
+                optionDictionary[option].Add(Box(token));
             });
 
             if (name == null)
@@ -553,7 +550,7 @@ namespace KPlugin.Debug.Internal
 
             arguments = argumentList.ToArray();
 
-            targetIdList = optionDictionary.ContainsKey("id") ? optionDictionary["id"].Select(x => (int)x).ToList() : null;
+            targetIdList = optionDictionary.ContainsKey("id") ? optionDictionary["id"].Select(id => (int)id).ToList() : null;
         }
 
         private static object Box(string s)

@@ -61,13 +61,13 @@ namespace KPlugin.Debug.Internal
         {
             this.fontSize = fontSize;
 
-            logTextList.ForEach(x => x.fontSize = fontSize);
+            logTextList.ForEach(text => text.fontSize = fontSize);
         }
 
         public void Save()
         {
             string data = "";
-            logTextList.ForEach(x => data = data + x.text + "\n");
+            logTextList.ForEach(text => data = data + text.text + "\n");
             FileManager.Write(System.DateTime.Now.ToString("yyyyMMddHHmmss") + ".log", data);
         }
 

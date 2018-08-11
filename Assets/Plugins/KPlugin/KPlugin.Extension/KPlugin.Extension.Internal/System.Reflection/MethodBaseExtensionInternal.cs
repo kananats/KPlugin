@@ -46,7 +46,7 @@ namespace KPlugin.Extension.Internal
                 return StringConstantInternal.objectNotFoundWarning.Color(Color.yellow);
 
             string s = "";
-            objectList.ForEach(x => s = s + methodBase.AutoInvokeInstance(x, fixedParameters) + "\n");
+            objectList.ForEach(obj => s = s + methodBase.AutoInvokeInstance(obj, fixedParameters) + "\n");
 
             return s.Substring(0, s.Length - 1);
         }

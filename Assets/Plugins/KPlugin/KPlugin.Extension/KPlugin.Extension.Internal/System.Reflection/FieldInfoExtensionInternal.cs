@@ -36,7 +36,7 @@ namespace KPlugin.Extension.Internal
                 return StringConstantInternal.objectNotFoundWarning.Color(Color.yellow);
 
             string s = "";
-            objectList.ForEach(x => s = s + fieldInfo.AutoGetValueInstance(x) + "\n");
+            objectList.ForEach(obj => s = s + fieldInfo.AutoGetValueInstance(obj) + "\n");
 
             return s.Substring(0, s.Length - 1);
         }
@@ -97,7 +97,7 @@ namespace KPlugin.Extension.Internal
                 return StringConstantInternal.objectNotFoundWarning.Color(Color.yellow);
 
             string s = "";
-            objectList.ForEach(x => s = s + fieldInfo.AutoSetValueInstance(x, value) + "\n");
+            objectList.ForEach(obj => s = s + fieldInfo.AutoSetValueInstance(obj, value) + "\n");
 
             return s.Substring(0, s.Length - 1);
         }

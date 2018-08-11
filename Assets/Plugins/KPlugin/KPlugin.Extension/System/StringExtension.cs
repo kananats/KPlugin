@@ -107,7 +107,7 @@ namespace KPlugin.Extension
 
         public static string Regular(this string s)
         {
-            return Regex.Replace(s, "[a-z][A-Z]", x => x.Value[0] + " " + x.Value[1]).Capital();
+            return Regex.Replace(s, "[a-z][A-Z]", token => token.Value[0] + " " + token.Value[1]).Capital();
         }
 
         public static KString Bold(this string s, bool bold = true)
@@ -142,7 +142,7 @@ namespace KPlugin.Extension
 
         public static IEnumerable<string> SplitByWhiteSpace(this string s)
         {
-            return Regex.Split(s, @"\s+").Where(x => x != string.Empty);
+            return Regex.Split(s, @"\s+").Where(token => token != string.Empty);
         }
 
         public static IEnumerable<string> SplitByWhiteSpaceExceptQuote(this string s)
