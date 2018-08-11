@@ -118,6 +118,24 @@ namespace KPlugin.Debug.Internal
             }
         }
 
+        public string GetDescription()
+        {
+            string description = "===FIELD===\n";
+            foreach (KeyValuePair<string, FieldInfo> entry in fieldInfoDictionary)
+                description = description + entry.Key + ":    " + entry.Value.GetDescription() + "\n";
+
+            description = description + "\n===PROPERTY===\n";
+            foreach (KeyValuePair<string, PropertyInfo> entry in propertyInfoDictionary)
+                description = description + entry.Key + ":    " + entry.Value.GetDescription() + "\n";
+
+            description = description + "\n===METHOD===\n";
+
+            foreach (KeyValuePair<string, List<MethodInfo>> entry in methodInfoDictionary)
+                entry.Value.ForEach(method => description = description + entry.Key + ":    " + method.GetDescription() + "\n");
+
+            return description;
+        }
+
         private void OnFocus()
         {
             consoleOutput.ShowBlackPanel();
@@ -142,17 +160,15 @@ namespace KPlugin.Debug.Internal
                 typeList.AddRange(assembly.GetTypes().Where(type => type.IsAbstract && type.IsSealed || !type.IsAbstract && !type.IsInterface && !type.IsGenericType && typeof(MonoBehaviour).IsAssignableFrom(type)));
             });
 
-            fieldInfoDictionary = new Dictionary<string, FieldInfo>();
-            propertyInfoDictionary = new Dictionary<string, PropertyInfo>();
-            methodInfoDictionary = new Dictionary<string, List<MethodInfo>>();
-
             InitializeFieldInfoDictionary();
-            InitializePropertyInfoDictionary();
+            InitializePropertyInfoDictionary();           
             InitializeMethodInfoDictionary();
         }
 
         private void InitializeFieldInfoDictionary()
         {
+            fieldInfoDictionary = new Dictionary<string, FieldInfo>();
+
             typeList.ForEach(type =>
             {
                 type.GetFields(BindingFlagsConstantInternal.allBindingFlags).ToList().ForEach(field =>
@@ -168,7 +184,9 @@ namespace KPlugin.Debug.Internal
                         return;
                     }
 
-                    if (fieldInfoDictionary.ContainsKey(name) || propertyInfoDictionary.ContainsKey(name) || methodInfoDictionary.ContainsKey(name))
+                    if (fieldInfoDictionary.ContainsKey(name) 
+                        || propertyInfoDictionary != null && propertyInfoDictionary.ContainsKey(name) 
+                        || methodInfoDictionary != null && methodInfoDictionary.ContainsKey(name))
                     {
                         StringConstantInternal.duplicatedFieldError.ReplacedBy(name).Color(Color.red).LogConsole();
                         return;
@@ -181,6 +199,8 @@ namespace KPlugin.Debug.Internal
 
         private void InitializePropertyInfoDictionary()
         {
+            propertyInfoDictionary = new Dictionary<string, PropertyInfo>();
+
             typeList.ForEach(type =>
             {
                 type.GetProperties(BindingFlagsConstantInternal.allBindingFlags).ToList().ForEach(property =>
@@ -196,7 +216,9 @@ namespace KPlugin.Debug.Internal
                         return;
                     }
 
-                    if (fieldInfoDictionary.ContainsKey(name) || propertyInfoDictionary.ContainsKey(name) || methodInfoDictionary.ContainsKey(name))
+                    if (fieldInfoDictionary != null && fieldInfoDictionary.ContainsKey(name) 
+                        || propertyInfoDictionary.ContainsKey(name) 
+                        || methodInfoDictionary != null && methodInfoDictionary.ContainsKey(name))
                     {
                         StringConstantInternal.propertyDuplicatedError.ReplacedBy(name).Color(Color.red).LogConsole();
                         return;
@@ -209,6 +231,8 @@ namespace KPlugin.Debug.Internal
 
         private void InitializeMethodInfoDictionary()
         {
+            methodInfoDictionary = new Dictionary<string, List<MethodInfo>>();
+
             typeList.ForEach(type =>
             {
                 type.GetMethods(BindingFlagsConstantInternal.allBindingFlags).Where(method => !method.IsAbstract && !method.IsGenericMethod && !method.IsDefined<ExtensionAttribute>()).ToList().ForEach(method =>
@@ -234,7 +258,8 @@ namespace KPlugin.Debug.Internal
                         return;
                     }
 
-                    if (fieldInfoDictionary.ContainsKey(name) || propertyInfoDictionary.ContainsKey(name))
+                    if (fieldInfoDictionary != null && fieldInfoDictionary.ContainsKey(name) 
+                        || propertyInfoDictionary != null && propertyInfoDictionary.ContainsKey(name))
                     {
                         StringConstantInternal.methodDuplicatedError.ReplacedBy(name).Color(Color.red).LogConsole();
                         return;

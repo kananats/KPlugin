@@ -10,25 +10,25 @@ namespace KPlugin.Extension.Internal
 
     public static class FieldInfoExtensionInternal
     {
-        public static string AutoGetValue(this FieldInfo fieldInfo)
+        public static string AutoGetValue(this FieldInfo field)
         {
-            return fieldInfo.AutoGetValue(UnityEngine.Object.FindObjectsOfType(fieldInfo.ReflectedType), _ => true);
+            return field.AutoGetValue(UnityEngine.Object.FindObjectsOfType(field.ReflectedType), _ => true);
         }
 
-        public static string AutoGetValue(this FieldInfo fieldInfo, UnityEngine.Object[] objects)
+        public static string AutoGetValue(this FieldInfo field, UnityEngine.Object[] objects)
         {
-            return fieldInfo.AutoGetValue(objects, _ => true);
+            return field.AutoGetValue(objects, _ => true);
         }
 
-        public static string AutoGetValue(this FieldInfo fieldInfo, Func<UnityEngine.Object, bool> predicate)
+        public static string AutoGetValue(this FieldInfo field, Func<UnityEngine.Object, bool> predicate)
         {
-            return fieldInfo.AutoGetValue(UnityEngine.Object.FindObjectsOfType(fieldInfo.ReflectedType), predicate);
+            return field.AutoGetValue(UnityEngine.Object.FindObjectsOfType(field.ReflectedType), predicate);
         }
 
-        public static string AutoGetValue(this FieldInfo fieldInfo, UnityEngine.Object[] objects, Func<UnityEngine.Object, bool> predicate)
+        public static string AutoGetValue(this FieldInfo field, UnityEngine.Object[] objects, Func<UnityEngine.Object, bool> predicate)
         {
-            if (fieldInfo.IsStatic)
-                return fieldInfo.AutoGetValueStatic();
+            if (field.IsStatic)
+                return field.AutoGetValueStatic();
 
             List<UnityEngine.Object> objectList = objects.Where(predicate).ToList();
 
@@ -36,60 +36,60 @@ namespace KPlugin.Extension.Internal
                 return StringConstantInternal.objectNotFoundWarning.Color(Color.yellow);
 
             string s = "";
-            objectList.ForEach(obj => s = s + fieldInfo.AutoGetValueInstance(obj) + "\n");
+            objectList.ForEach(obj => s = s + field.AutoGetValueInstance(obj) + "\n");
 
             return s.Substring(0, s.Length - 1);
         }
 
-        private static string AutoGetValueInstance(this FieldInfo fieldInfo, UnityEngine.Object obj)
+        private static string AutoGetValueInstance(this FieldInfo field, UnityEngine.Object obj)
         {
             object value;
             try
             {
-                value = fieldInfo.GetValue(obj);
+                value = field.GetValue(obj);
             }
             catch (Exception)
             {
-                return StringConstantInternal.fieldGetValueInstanceError.ReplacedBy(fieldInfo.Name, obj.name, obj.GetInstanceID()).Color(Color.red);
+                return StringConstantInternal.fieldGetValueInstanceError.ReplacedBy(field.Name, obj.name, obj.GetInstanceID()).Color(Color.red);
             }
 
-            return StringConstantInternal.fieldGetValueInstanceSuccess.ReplacedBy(fieldInfo.Name, obj.name, obj.GetInstanceID(), value.ToSimpleString());
+            return StringConstantInternal.fieldGetValueInstanceSuccess.ReplacedBy(field.Name, obj.name, obj.GetInstanceID(), value.ToSimpleString());
         }
 
-        private static string AutoGetValueStatic(this FieldInfo fieldInfo)
+        private static string AutoGetValueStatic(this FieldInfo field)
         {
             object value;
             try
             {
-                value = fieldInfo.GetValue(null);
+                value = field.GetValue(null);
             }
             catch (Exception)
             {
-                return StringConstantInternal.fieldGetValueStaticError.ReplacedBy(fieldInfo.Name).Color(Color.red);
+                return StringConstantInternal.fieldGetValueStaticError.ReplacedBy(field.Name).Color(Color.red);
             }
 
-            return StringConstantInternal.fieldGetValueStaticSuccess.ReplacedBy(fieldInfo.Name, value.ToSimpleString());
+            return StringConstantInternal.fieldGetValueStaticSuccess.ReplacedBy(field.Name, value.ToSimpleString());
         }
 
-        public static string AutoSetValue(this FieldInfo fieldInfo, object value)
+        public static string AutoSetValue(this FieldInfo field, object value)
         {
-            return fieldInfo.AutoSetValue(UnityEngine.Object.FindObjectsOfType(fieldInfo.ReflectedType), _ => true, value);
+            return field.AutoSetValue(UnityEngine.Object.FindObjectsOfType(field.ReflectedType), _ => true, value);
         }
 
-        public static string AutoSetValue(this FieldInfo fieldInfo, UnityEngine.Object[] objects, object value)
+        public static string AutoSetValue(this FieldInfo field, UnityEngine.Object[] objects, object value)
         {
-            return fieldInfo.AutoSetValue(objects, _ => true, value);
+            return field.AutoSetValue(objects, _ => true, value);
         }
 
-        public static string AutoSetValue(this FieldInfo fieldInfo, Func<UnityEngine.Object, bool> predicate, object value)
+        public static string AutoSetValue(this FieldInfo field, Func<UnityEngine.Object, bool> predicate, object value)
         {
-            return fieldInfo.AutoSetValue(UnityEngine.Object.FindObjectsOfType(fieldInfo.ReflectedType), predicate, value);
+            return field.AutoSetValue(UnityEngine.Object.FindObjectsOfType(field.ReflectedType), predicate, value);
         }
 
-        public static string AutoSetValue(this FieldInfo fieldInfo, UnityEngine.Object[] objects, Func<UnityEngine.Object, bool> predicate, object value)
+        public static string AutoSetValue(this FieldInfo field, UnityEngine.Object[] objects, Func<UnityEngine.Object, bool> predicate, object value)
         {
-            if (fieldInfo.IsStatic)
-                return fieldInfo.AutoSetValueStatic(value);
+            if (field.IsStatic)
+                return field.AutoSetValueStatic(value);
 
             List<UnityEngine.Object> objectList = objects.Where(predicate).ToList();
 
@@ -97,23 +97,28 @@ namespace KPlugin.Extension.Internal
                 return StringConstantInternal.objectNotFoundWarning.Color(Color.yellow);
 
             string s = "";
-            objectList.ForEach(obj => s = s + fieldInfo.AutoSetValueInstance(obj, value) + "\n");
+            objectList.ForEach(obj => s = s + field.AutoSetValueInstance(obj, value) + "\n");
 
             return s.Substring(0, s.Length - 1);
         }
 
-        private static string AutoSetValueInstance(this FieldInfo fieldInfo, UnityEngine.Object obj, object value)
+        private static string AutoSetValueInstance(this FieldInfo field, UnityEngine.Object obj, object value)
         {
-            fieldInfo.SetValue(obj, value);
+            field.SetValue(obj, value);
 
-            return StringConstantInternal.fieldSetValueInstanceSuccess.ReplacedBy(fieldInfo.Name, obj.name, obj.GetInstanceID(), value.ToSimpleString());
+            return StringConstantInternal.fieldSetValueInstanceSuccess.ReplacedBy(field.Name, obj.name, obj.GetInstanceID(), value.ToSimpleString());
         }
 
-        private static string AutoSetValueStatic(this FieldInfo fieldInfo, object value)
+        private static string AutoSetValueStatic(this FieldInfo field, object value)
         {
-            fieldInfo.SetValue(null, value);
+            field.SetValue(null, value);
 
-            return StringConstantInternal.fieldSetValueStaticSuccess.ReplacedBy(fieldInfo.Name, value.ToSimpleString());
+            return StringConstantInternal.fieldSetValueStaticSuccess.ReplacedBy(field.Name, value.ToSimpleString());
+        }
+
+        public static String GetDescription(this FieldInfo field)
+        {
+            return "(" + field.FieldType.Name + ") " + field.Name + " { get; set; }";
         }
     }
 }

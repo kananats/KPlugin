@@ -6,21 +6,21 @@ namespace KPlugin.Extension.Internal
 {
     public static class ParameterInfoExtensionInternal
     {
-        public static T GetCustomAttribute<T>(this ParameterInfo parameterInfo, bool inherit = true) where T : Attribute
+        public static T GetCustomAttribute<T>(this ParameterInfo parameter, bool inherit = true) where T : Attribute
         {
-            T[] attributes = parameterInfo.GetCustomAttributes<T>();
+            T[] attributes = parameter.GetCustomAttributes<T>();
             return attributes.Length == 0 ? null : attributes[0];
         }
 
-        public static T[] GetCustomAttributes<T>(this ParameterInfo parameterInfo, bool inherit = true) where T : Attribute
+        public static T[] GetCustomAttributes<T>(this ParameterInfo parameter, bool inherit = true) where T : Attribute
         {
-            T[] attributes = parameterInfo.GetCustomAttributes(typeof(T), inherit).Cast<T>().ToArray();
+            T[] attributes = parameter.GetCustomAttributes(typeof(T), inherit).Cast<T>().ToArray();
             return attributes;
         }
 
-        public static bool IsDefined<T>(this ParameterInfo parameterInfo, bool inherit = true) where T : Attribute
+        public static bool IsDefined<T>(this ParameterInfo parameter, bool inherit = true) where T : Attribute
         {
-            return parameterInfo.IsDefined(typeof(T), inherit);
+            return parameter.IsDefined(typeof(T), inherit);
         }
     }
 }

@@ -69,6 +69,15 @@ namespace KPlugin.Debug
             instance.consoleOutput.Clear();
         }
 
+        [Console("help")]
+        public static void Help()
+        {
+            if (instance == null || instance.consoleInput == null)
+                return;
+
+            Log(instance.consoleInput.GetDescription());
+        }
+
         [Console("save")]
         public static void Save()
         {
