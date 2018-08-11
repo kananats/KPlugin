@@ -136,7 +136,11 @@ namespace KPlugin.Debug.Internal
 
         private void InitializeDictionary()
         {
-            typeList = Assembly.GetExecutingAssembly().GetTypes().Where(x => x.IsAbstract && x.IsSealed || !x.IsAbstract && !x.IsInterface && !x.IsGenericType && typeof(MonoBehaviour).IsAssignableFrom(x)).ToList();
+            typeList = new List<Type>();
+            AppDomain.CurrentDomain.GetAssemblies().ToList().ForEach(x =>
+            {
+                typeList.AddRange(x.GetTypes().Where(y => y.IsAbstract && y.IsSealed || !y.IsAbstract && !y.IsInterface && !y.IsGenericType && typeof(MonoBehaviour).IsAssignableFrom(y)));
+            });
 
             fieldInfoDictionary = new Dictionary<string, FieldInfo>();
             propertyInfoDictionary = new Dictionary<string, PropertyInfo>();
