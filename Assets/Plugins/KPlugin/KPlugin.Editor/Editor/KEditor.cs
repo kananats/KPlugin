@@ -11,10 +11,23 @@ namespace KPlugin.Editor
     using Extension.Internal;
     using Constant.Internal;
 
+    /// <summary>
+    /// Class representing custom editor
+    /// <remarks>
+    /// This class is required to use <c>HideDefaultAttribute</c>, and <c>SerializeMethodAttribute</c>.
+    /// </remarks>
+    /// </summary>
     [CustomEditor(typeof(MonoBehaviour), true), CanEditMultipleObjects]
     public class KEditor : UnityEditor.Editor
     {
+        /// <summary>
+        /// All <c>MonoBehaviour</c> attached
+        /// </summary>
         private MonoBehaviour[] monoBehaviours;
+
+        /// <summary>
+        /// First <c>MonoBehaviour</c> attached
+        /// </summary>
         private MonoBehaviour monoBehaviour;
 
         override public void OnInspectorGUI()
@@ -32,18 +45,25 @@ namespace KPlugin.Editor
                     Type type = y.ParameterType;
                     return y.IsOut || type.IsByRef || !y.IsOptional;
                 });
-            }).ToList().ForEach(x => SerializedMethodAttributeHandler(x));
+            }).ToList().ForEach(x => SerializeMethodAttributeHandler(x));
 
             Repaint();
         }
 
+        /// <summary>
+        /// Handler function for <c>HideDefaultAttribute</c>
+        /// </summary>
         private void HideDefaultAttributeHandler()
         {
             if (monoBehaviour.GetType().GetCustomAttribute<HideDefaultAttribute>() == null)
                 DrawDefaultInspector();
         }
 
-        private void SerializedMethodAttributeHandler(MethodInfo methodInfo)
+        /// <summary>
+        /// Handler function for <c>SerializMethodAttribute</c>
+        /// </summary>
+        /// <param name="methodInfo">The method</param>
+        private void SerializeMethodAttributeHandler(MethodInfo methodInfo)
         {
             SerializeMethodAttribute attribute = methodInfo.GetCustomAttribute<SerializeMethodAttribute>();
 

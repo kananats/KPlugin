@@ -2,8 +2,16 @@
 
 namespace KPlugin.Extension.Internal
 {
+    /// <summary>
+    /// An internal class for adding functionalities to <c>Array</c>
+    /// </summary>
     public static class ArrayExtensionInternal
     {
+        /// <summary>
+        /// Makes the readable string
+        /// </summary>
+        /// <param name="array">The array</param>
+        /// <param name="showType">A <c>bool</c> indicating whether the type name should be shown</param>
         public static string ToSimpleString(this Array array, bool showType = false)
         {
             int rank = array.Rank;
@@ -15,6 +23,14 @@ namespace KPlugin.Extension.Internal
             return array.ToSimpleString(lengths, indices, 0, showType);
         }
 
+        /// <summary>
+        /// Makes the readable string
+        /// </summary>
+        /// <param name="array">The array</param>
+        /// <param name="lengths">Dimensions of the array</param>
+        /// <param name="indices">All indices</param>
+        /// <param name="index">Current index</param>
+        /// <param name="showType">A <c>bool</c> indicating whether the type name should be shown</param>
         public static string ToSimpleString(this Array array, int[] lengths, int[] indices, int index, bool showType = false)
         {
             string s = "{";

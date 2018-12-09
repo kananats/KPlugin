@@ -13,35 +13,90 @@ namespace KPlugin.Debug.Internal
     using Constant;
     using Constant.Internal;
 
+    /// <summary>
+    /// Class processing input of the console
+    /// </summary>
     [RequireComponent(typeof(InputField))]
     public class ConsoleInput : MonoBehaviour
     {
+        /// <summary>
+        /// Reference to the input field
+        /// </summary>
         [SerializeField]
         private InputField inputField;
 
+        /// <summary>
+        /// Reference to the console
+        /// </summary>
         [SerializeField]
         private Console console;
 
+        /// <summary>
+        /// Reference to the console output
+        /// </summary>
         [SerializeField]
         private ConsoleOutput consoleOutput;
 
+        /// <summary>
+        /// Dictionary mapping from unique name to field info
+        /// </summary>
         private Dictionary<string, FieldInfo> fieldInfoDictionary;
+
+        /// <summary>
+        /// Dictionary mapping from unique name to property info
+        /// </summary>
         private Dictionary<string, PropertyInfo> propertyInfoDictionary;
+
+        /// <summary>
+        /// Dictionary mapping from unique name to list of method info
+        /// </summary>
         private Dictionary<string, List<MethodInfo>> methodInfoDictionary;
 
+        /// <summary>
+        /// List of all types in the assembly
+        /// </summary>
         private List<Type> typeList;
 
+        /// <summary>
+        /// Current string input
+        /// </summary>
         private string input;
 
+        /// <summary>
+        /// Input history
+        /// </summary>
         private List<string> inputHistory;
+
+        /// <summary>
+        /// Current index of input history
+        /// </summary>
         private int inputHistoryIndex;
 
+        /// <summary>
+        /// Current command
+        /// </summary>
         private Command command;
+
+        /// <summary>
+        /// Name of the current command
+        /// </summary>
         private new string name;
+
+        /// <summary>
+        /// Arguments of the current command
+        /// </summary>
         private object[] arguments;
+
+        /// <summary>
+        /// Unique identifier of the target objects
+        /// </summary>
         private List<int> targetIdList;
 
         private bool _focused;
+
+        /// <summary>
+        /// Is console input window being focused
+        /// </summary>
         public bool focused
         {
             get
@@ -65,6 +120,9 @@ namespace KPlugin.Debug.Internal
             }
         }
 
+        /// <summary>
+        /// Predicate for filtering objects
+        /// </summary>
         private Func<UnityEngine.Object, bool> predicate
         {
             get
@@ -73,6 +131,9 @@ namespace KPlugin.Debug.Internal
             }
         }
 
+        /// <summary>
+        /// One-time initialization
+        /// </summary>
         public void Initialize()
         {
             _focused = false;
@@ -118,6 +179,10 @@ namespace KPlugin.Debug.Internal
             }
         }
 
+        /// <summary>
+        /// Makes a help description for the field 
+        /// </summary>
+        /// <returns></returns>
         public string GetDescription()
         {
             string description = "===FIELD===\n";
@@ -136,6 +201,9 @@ namespace KPlugin.Debug.Internal
             return description;
         }
 
+        /// <summary>
+        /// This function is called every time the console input window is focused.
+        /// </summary>
         private void OnFocus()
         {
             consoleOutput.ShowBlackPanel();
@@ -144,6 +212,9 @@ namespace KPlugin.Debug.Internal
                 consoleOutput.ShowLog();
         }
 
+        /// <summary>
+        /// This function is called every time the console input window is losing focused.
+        /// </summary>
         private void OnLosingFocus()
         {
             consoleOutput.HideBlackPanel();
@@ -152,6 +223,9 @@ namespace KPlugin.Debug.Internal
                 consoleOutput.HideLog();
         }
 
+        /// <summary>
+        /// One-time initialization for dictionary
+        /// </summary>
         private void InitializeDictionary()
         {
             typeList = new List<Type>();
@@ -165,6 +239,9 @@ namespace KPlugin.Debug.Internal
             InitializeMethodInfoDictionary();
         }
 
+        /// <summary>
+        /// One-time initialization for field info dictionary
+        /// </summary>
         private void InitializeFieldInfoDictionary()
         {
             fieldInfoDictionary = new Dictionary<string, FieldInfo>();
@@ -197,6 +274,9 @@ namespace KPlugin.Debug.Internal
             });
         }
 
+        /// <summary>
+        /// One-time initialization for property info dictionary
+        /// </summary>
         private void InitializePropertyInfoDictionary()
         {
             propertyInfoDictionary = new Dictionary<string, PropertyInfo>();
@@ -229,6 +309,9 @@ namespace KPlugin.Debug.Internal
             });
         }
 
+        /// <summary>
+        /// One-time initialization for method info dictionary
+        /// </summary>
         private void InitializeMethodInfoDictionary()
         {
             methodInfoDictionary = new Dictionary<string, List<MethodInfo>>();
@@ -292,6 +375,10 @@ namespace KPlugin.Debug.Internal
             });
         }
 
+        /// <summary>
+        /// Handler function for the input string
+        /// </summary>
+        /// <param name="input">The input string</param>
         private void Handler(string input)
         {
             if (!Input.GetKeyDown(KeyCode.Return) && !Input.GetKeyDown(KeyCode.KeypadEnter))
@@ -356,6 +443,9 @@ namespace KPlugin.Debug.Internal
             ClearInputField();
         }
 
+        /// <summary>
+        /// Handler function for field
+        /// </summary>
         private void FieldHandler()
         {
             FieldInfo fieldInfo = fieldInfoDictionary[name];
@@ -402,6 +492,9 @@ namespace KPlugin.Debug.Internal
             }
         }
 
+        /// <summary>
+        /// Handler function for property
+        /// </summary>
         private void PropertyHandler()
         {
             PropertyInfo propertyInfo = propertyInfoDictionary[name];
@@ -458,6 +551,9 @@ namespace KPlugin.Debug.Internal
             }
         }
 
+        /// <summary>
+        /// Handler function for method
+        /// </summary>
         private void MethodHandler()
         {
             List<MethodInfo> methodInfoList = methodInfoDictionary[name];
@@ -512,12 +608,18 @@ namespace KPlugin.Debug.Internal
             mostCompatibleMethod.AutoInvoke(predicate, mostCompatibleBoxedArguments).LogConsole();
         }
 
+        /// <summary>
+        /// Clear input field
+        /// </summary>
         private void ClearInputField()
         {
             inputField.ActivateInputField();
             inputField.text = "";
         }
 
+        /// <summary>
+        /// Parse the input string into tokens
+        /// </summary>
         private void Parse()
         {
             List<object> argumentList = new List<object>();
@@ -578,6 +680,11 @@ namespace KPlugin.Debug.Internal
             targetIdList = optionDictionary.ContainsKey("id") ? optionDictionary["id"].Select(id => (int)id).ToList() : null;
         }
 
+        /// <summary>
+        /// Wraps the token with predicted type
+        /// </summary>
+        /// <param name="s">Token</param>
+        /// <returns></returns>
         private static object Box(string s)
         {
             string sNoDoubleQuote = s.DoubleQuote(false);

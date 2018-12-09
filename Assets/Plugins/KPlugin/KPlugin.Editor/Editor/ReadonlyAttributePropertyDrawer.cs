@@ -3,6 +3,9 @@ using UnityEditor;
 
 namespace KPlugin.Editor
 {
+    /// <summary>
+    /// Custom property drawer for drawing <c>ReadonlyAttribute</c>
+    /// </summary>
     [CustomPropertyDrawer(typeof(ReadonlyAttribute))]
     public class ReadonlyAttributePropertyDrawer : PropertyDrawer
     {

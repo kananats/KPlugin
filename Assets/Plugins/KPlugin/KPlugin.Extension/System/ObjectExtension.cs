@@ -9,8 +9,15 @@ namespace KPlugin.Extension
     using Debug;
     using Constant.Internal;
 
+    /// <summary>
+    /// A class for adding functionalities to <c>object</c>
+    /// </summary>
     public static class ObjectExtension
     {
+        /// <summary>
+        /// Makes a dictionary mapping from field name to its value
+        /// </summary>
+        /// <param name="obj">The object</param>
         public static IDictionary<string, object> ToDictionary(this object obj)
         {
             Dictionary<string, object> dictionary = new Dictionary<string, object>();
@@ -20,26 +27,53 @@ namespace KPlugin.Extension
             return dictionary;
         }
 
+        /// <summary>
+        /// Logs itself to Unity console
+        /// </summary>
+        /// <param name="obj">The object</param>
+        /// <param name="useSimpleString">A <c>bool</c> indicating whether simple string should be used instead</param>
         public static void Log(this object obj, bool useSimpleString = true)
         {
             obj.Log("{0}", useSimpleString);
         }
 
+        /// <summary>
+        /// Logs itself to Unity console
+        /// </summary>
+        /// <param name="obj">The object</param>
+        /// <param name="format">The formatted string</param>
+        /// <param name="useSimpleString">A <c>bool</c> indicating whether simple string should be used instead</param>
         public static void Log(this object obj, string format, bool useSimpleString = true)
         {
             UnityEngine.Debug.Log(format.ReplacedBy(useSimpleString ? obj.ToSimpleString() : obj.ToString()).DoubleQuote(false));
         }
 
+        /// <summary>
+        /// Logs itself to console
+        /// </summary>
+        /// <param name="obj">The object</param>
+        /// <param name="useSimpleString">A <c>bool</c> indicating whether simple string should be used instead</param>
         public static void LogConsole(this object obj, bool useSimpleString = true)
         {
             obj.LogConsole("{0}", useSimpleString);
         }
 
+        /// <summary>
+        /// Logs itself to console
+        /// </summary>
+        /// <param name="obj">The object</param>
+        /// <param name="format">The formatted string</param>
+        /// <param name="useSimpleString">A <c>bool</c> indicating whether simple string should be used instead</param>
         public static void LogConsole(this object obj, string format, bool useSimpleString = true)
         {
             Console.Log(format.ReplacedBy(useSimpleString ? obj.ToSimpleString() : obj.ToString()).DoubleQuote(false));
         }
 
+        /// <summary>
+        /// Makes a readable string
+        /// </summary>
+        /// <param name="obj">The object</param>
+        /// <param name="showType">A <c>bool</c> indicating whether the type name should be shown</param>
         public static string ToSimpleString(this object obj, bool showType = false)
         {
             // Null

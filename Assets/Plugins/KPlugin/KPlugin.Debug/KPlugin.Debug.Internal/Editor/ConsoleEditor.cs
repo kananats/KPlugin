@@ -4,8 +4,14 @@ using UnityEditor;
 
 namespace KPlugin.Debug.Internal
 {
+    /// <summary>
+    /// The internal class for adding functionalities to Editor
+    /// </summary>
     public class ConsoleEditor : MonoBehaviour
     {
+        /// <summary>
+        /// Creates console with canvas
+        /// </summary>
         [MenuItem("GameObject/Create Other/Console (with Canvas)")]
         static void CreateConsoleWithCanvas()
         {
@@ -14,6 +20,9 @@ namespace KPlugin.Debug.Internal
             CreateEventSystemIfNotExist();
         }
 
+        /// <summary>
+        /// Creates console without canvas
+        /// </summary>
         [MenuItem("GameObject/Create Other/Console")]
         static void CreateConsole()
         {
@@ -22,6 +31,9 @@ namespace KPlugin.Debug.Internal
             CreateEventSystemIfNotExist();
         }
 
+        /// <summary>
+        /// Creates event system if it does not exist
+        /// </summary>
         private static void CreateEventSystemIfNotExist()
         {
             if (FindObjectOfType<EventSystem>() == null)

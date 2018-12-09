@@ -2,8 +2,18 @@
 
 namespace KPlugin.Extension.Internal
 {
+    /// <summary>
+    /// An internal class for adding functionalities to <c>Object</c>
+    /// </summary>
     public static class ObjectExtensionInternal
     {
+        /// <summary>
+        /// Casts object to the preferred type
+        /// </summary>
+        /// <param name="input">The object</param>
+        /// <param name="targetType">The preferred type</param>
+        /// <param name="compatibility">Value indicating casting compatibility</param>
+        /// <returns>Casted object</returns>
         public static object ChangeTypeWithCompatibility(this object input, Type targetType, out int compatibility)
         {
             Type inputType = input.GetType();
